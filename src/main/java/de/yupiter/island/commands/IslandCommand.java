@@ -240,4 +240,109 @@ public class IslandCommand implements CommandExecutor, TabCompleter {
         }
         return false;
     }
+    public void sendHelpSite(Player p, int page){
+        if(page == 1){
+            p.sendMessage("§8>>§8§m--------------------§b Seite 1. §8§m--------------------§r§8<<");
+            p.sendMessage("");
+            p.sendMessage(YupiterIsland.getInstance().getPrefix()+"/is §8- §7Teleportiere dich zu deiner Insel.");
+            p.sendMessage(YupiterIsland.getInstance().getPrefix()+"/is create §8- §7Erstelle dir eine Insel.");
+            p.sendMessage(YupiterIsland.getInstance().getPrefix()+"/is delete §8- §7Lösche deine Insel.");
+            p.sendMessage(YupiterIsland.getInstance().getPrefix()+"/is settings §8- §7Öffnet die Insel-Benutzeroberfläche.");
+            p.sendMessage(YupiterIsland.getInstance().getPrefix()+"/is leave §8- §7Entziehe dir selber die Rechte auf der Insel.");
+            p.sendMessage(YupiterIsland.getInstance().getPrefix()+"/is info §8- §7Gibt dir eine Information deiner Insel wieder.");
+            p.sendMessage(YupiterIsland.getInstance().getPrefix()+"/is setspawn §8- §7Setze dein Inselspawn");
+            p.sendMessage(YupiterIsland.getInstance().getPrefix()+"/is level §8- §7Zeigt dir an welches Level (d)eine Insel");
+            p.sendMessage(YupiterIsland.getInstance().getPrefix()+"/is setwarp §8- §7Setze ein Warp für deine Insel. (§bmax 1.§7)");
+            p.sendMessage(YupiterIsland.getInstance().getPrefix()+"/is warp §8- §7Öffnet ein Liste der erstellten Warps.");
+            p.sendMessage("");
+            TextComponent message = new TextComponent(YupiterIsland.getInstance().getPrefix()+"➥ Seite 2.");
+            message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§o§7Klicke hier für Seite 2.").create()));
+            message.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/is help 2"));
+            p.spigot().sendMessage(message);
+            p.sendMessage("");
+            p.sendMessage("§8>>§8§m-----------------------------------------------§r§8<<");
+        }else if(page == 2){
+            p.sendMessage("§8>>§8§m--------------------§b Seite 2. §8§m--------------------§r§8<<");
+            p.sendMessage("");
+            p.sendMessage(YupiterIsland.getInstance().getPrefix()+"/is invite <Spieler> §8- §7Lade einen Spieler zu deiner Insel ein. (§bmax. 1 Spieler§7)");
+            p.sendMessage(YupiterIsland.getInstance().getPrefix()+"/is setowner <Spieler> §8- §7Übergebe deine Insel einem anderen Spieler.");
+            p.sendMessage(YupiterIsland.getInstance().getPrefix()+"/is kick <Spieler> §8- §7Werfe Spieler von deiner Insel.");
+            p.sendMessage(YupiterIsland.getInstance().getPrefix()+"/is ban <Spieler> §8- §7Banne ein Spieler von deiner Insel.");
+            p.sendMessage(YupiterIsland.getInstance().getPrefix()+"/is unban <Spieler> §8- §7Entbanne ein Spieler von deiner Insel.");
+            p.sendMessage(YupiterIsland.getInstance().getPrefix()+"/is visit <Spieler> §8- §7Besuche eine Insel eines anderen Spielers.");
+            p.sendMessage(YupiterIsland.getInstance().getPrefix()+"/is warp <Spieler> §8- §7Warpe dich du zu einer Insel eines anderen Spielers.");
+            p.sendMessage(YupiterIsland.getInstance().getPrefix()+"/is accept <Spieler> §8- §7Nehme eine Einladung an, um bei einer anderen Insel mitzuhelfen.");
+            p.sendMessage(YupiterIsland.getInstance().getPrefix()+"/is deny <Spieler> §8- §7Lehnt die Einladung ab, um bei einer anderen Insel mitzuhelfen.");
+            p.sendMessage(YupiterIsland.getInstance().getPrefix()+"/is remove <Spieler> §8- §7Entfernt die Rechte eines Spieler für deine Insel.");
+            p.sendMessage("");
+            TextComponent message = new TextComponent(YupiterIsland.getInstance().getPrefix()+"➥ Seite 1.");
+            message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§o§7Klicke hier für Seite 1.").create()));
+            message.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/is help"));
+            p.spigot().sendMessage(message);
+            p.sendMessage("");
+            p.sendMessage("§8>>§8§m-----------------------------------------------§r§8<<");
+        }
+    }
+
+    @Nullable
+    @Override
+    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
+        List<String> tabs = new ArrayList<>();
+        if(args.length == 1){
+            List<String> match = new ArrayList<>();
+            match.add("delete");
+            match.add("create");
+            match.add("settings");
+            match.add("leave");
+            match.add("info");
+            match.add("setspawn");
+            match.add("level");
+            match.add("setwarp");
+            match.add("warp");
+            match.add("help");
+            match.add("invite");
+            match.add("setowner");
+            match.add("kick");
+            match.add("ban");
+            match.add("unban");
+            match.add("visit");
+            match.add("warp");
+            match.add("accept");
+            match.add("deny");
+            match.add("remove");
+            String name = args[0].isEmpty() ? "" : args[0];
+            match.forEach(matchs -> {
+                if (matchs.contains(name)) {
+                    tabs.add(matchs);
+                }
+            });
+        }
+        if(args.length == 2){
+            if(args[0].equalsIgnoreCase("invite") || args[0].equalsIgnoreCase("setowner") || args[0].equalsIgnoreCase("visit") || args[0].equalsIgnoreCase("warp") ){
+                String name = args[1].isEmpty() ? "" : args[1];
+                Bukkit.getOnlinePlayers().forEach(players -> {
+                    if (players.getName().contains(name)) {
+                        tabs.add(players.getName());
+                    }
+                });
+            }
+            if(args[0].equalsIgnoreCase("help")){
+                tabs.add("1");
+                tabs.add("2");
+            }
+            if(args[0].equalsIgnoreCase("kick") || args[0].equalsIgnoreCase("ban")){
+                //tabs für die auf der Insel sind
+            }
+            if(args[0].equalsIgnoreCase("remove")){
+                //tabs für die die getrusted sind
+            }
+            if(args[0].equalsIgnoreCase("unban")){
+                //tabs für die die von der insel gebannt sind
+            }
+            if(args[0].equalsIgnoreCase("deny") || args[0].equalsIgnoreCase("acccept")){
+                //tabs für die ein inselinvite an steht
+            }
+        }
+        return tabs;
+    }
 }

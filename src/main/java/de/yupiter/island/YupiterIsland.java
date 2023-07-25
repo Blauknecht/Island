@@ -60,7 +60,9 @@ public class YupiterIsland extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        this.mysql.close();
         super.onDisable();
     }
+
 
 }
