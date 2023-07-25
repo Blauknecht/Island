@@ -1,6 +1,0 @@
-name: YupiterIsland
-version: 1.0
-author: Kevloe
-main: de.yupiter.island.YupiterIsland
-commands:
-  is:
