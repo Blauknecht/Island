@@ -54,6 +54,20 @@
       <id>spigot-repo</id>
       <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
     </repository>
+    <repository>
+      <id>api</id>
+      <name>GitHub YupiterMC Apache Maven Packages</name>
+      <url>https://maven.pkg.github.com/YupiterMC/YupiterAPI</url>
+    </repository>
+    <repository>
+      <id>packets</id>
+      <name>GitHub YupiterMC Apache Maven Packages</name>
+      <url>https://maven.pkg.github.com/YupiterMC/Packets</url>
+    </repository>
+    <repository>
+      <id>papermc</id>
+      <url>https://repo.papermc.io/repository/maven-public/</url>
+    </repository>
   </repositories>
   <dependencies>
     <dependency>
@@ -84,7 +98,145 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <dependency>
+      <groupId>com.fastasyncworldedit</groupId>
+      <artifactId>FastAsyncWorldEdit-Core</artifactId>
+      <version>2.7.0</version>
+      <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <artifactId>FastAsyncWorldEdit-Libs-Core</artifactId>
+          <groupId>com.fastasyncworldedit</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>antlr4</artifactId>
+          <groupId>org.antlr</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>adventure-nbt</artifactId>
+          <groupId>net.kyori</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>adventure-text-minimessage</artifactId>
+          <groupId>net.kyori</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>fastutil</artifactId>
+          <groupId>it.unimi.dsi</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>log4j-api</artifactId>
+          <groupId>org.apache.logging.log4j</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>jsr305</artifactId>
+          <groupId>com.google.code.findbugs</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>rhino-runtime</artifactId>
+          <groupId>org.mozilla</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>zstd-jni</artifactId>
+          <groupId>com.github.luben</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>antlr4-runtime</artifactId>
+          <groupId>org.antlr</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>json-simple</artifactId>
+          <groupId>com.googlecode.json-simple</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>guava</artifactId>
+          <groupId>com.google.guava</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>gson</artifactId>
+          <groupId>com.google.code.gson</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>snakeyaml</artifactId>
+          <groupId>org.yaml</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>com.fastasyncworldedit</groupId>
+      <artifactId>FastAsyncWorldEdit-Bukkit</artifactId>
+      <version>2.7.0</version>
+      <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <artifactId>FastAsyncWorldEdit-Core</artifactId>
+          <groupId>*</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>FastAsyncWorldEdit-Libs-Bukkit</artifactId>
+          <groupId>com.fastasyncworldedit</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>lz4-java</artifactId>
+          <groupId>org.lz4</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>SparseBitSet</artifactId>
+          <groupId>com.zaxxer</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>parallelgzip</artifactId>
+          <groupId>org.anarres</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>checker-qual</artifactId>
+          <groupId>org.checkerframework</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>paperlib</artifactId>
+          <groupId>io.papermc</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>bstats-bukkit</artifactId>
+          <groupId>org.bstats</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>bstats-base</artifactId>
+          <groupId>org.bstats</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>ServerLib</artifactId>
+          <groupId>dev.notmyfault.serverlib</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>Paster</artifactId>
+          <groupId>com.intellectualsites.paster</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>fastutil</artifactId>
+          <groupId>it.unimi.dsi</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>de.kevloe.cloud</groupId>
+      <artifactId>CloudDriver</artifactId>
+      <version>4.4.0-SNAPSHOT</version>
+      <scope>system</scope>
+      <systemPath>G:\Minecraft PRG\Yupiter\YupiterIsland/lib/cloudnet-driver.jar</systemPath>
+    </dependency>
   </dependencies>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.intellectualsites.bom</groupId>
+        <artifactId>bom-newest</artifactId>
+        <version>1.34</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
   <properties>
     <maven.compiler.target>18</maven.compiler.target>
     <maven.compiler.source>18</maven.compiler.source>

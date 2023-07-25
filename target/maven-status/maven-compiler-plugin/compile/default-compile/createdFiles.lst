@@ -1,1 +1,16 @@
+de\yupiter\island\listener\PlayerDropItemListener.class
+de\yupiter\island\commands\IslandCommand.class
+de\yupiter\island\listener\EntityDamageByEntityListener.class
+de\yupiter\island\utils\MySQL.class
+de\yupiter\island\manager\IslandManager.class
+de\yupiter\island\listener\PlayerPickupItemListener.class
+de\yupiter\island\utils\Serialers.class
+de\yupiter\island\island\Island$1.class
+de\yupiter\island\island\IslandSize.class
+de\yupiter\island\listener\BlockPlaceListener.class
+de\yupiter\island\listener\PlayerInteractListener.class
+de\yupiter\island\manager\SchematicManager.class
+de\yupiter\island\island\Island.class
+de\yupiter\island\listener\BlockBreakListener.class
+de\yupiter\island\listener\PlayerJoinListener.class
 de\yupiter\island\YupiterIsland.class
