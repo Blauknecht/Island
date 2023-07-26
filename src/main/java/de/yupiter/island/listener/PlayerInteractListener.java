@@ -3,21 +3,33 @@ package de.yupiter.island.listener;
 import de.kevloe.packets.types.Rank;
 import de.yupiter.island.YupiterIsland;
 import de.yupiter.island.island.Island;
+import de.yupiter.island.spawner.CustomBlock;
+import de.yupiterapi.YupiterAPI;
+import org.bukkit.GameMode;
+import org.bukkit.Instrument;
+import org.bukkit.Material;
+import org.bukkit.Note;
+import org.bukkit.block.Block;
+import org.bukkit.block.data.type.NoteBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
+
+import java.util.Objects;
 
 public class PlayerInteractListener implements Listener {
 
     @EventHandler
-    public void on(PlayerInteractEvent event){
+    public void on(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         Rank rank = YupiterIsland.getInstance().getRankAPI().getPlayerRank(player);
         Island island = YupiterIsland.getInstance().getIslandManager().getIslandAtLocation(player.getLocation());
-        if(island != null){
-            if(!rank.isHigherEqualsLevel(Rank.DEVELOPER)){
-                if(!island.isOnIsland(player)){
+        if (island != null) {
+            if (!rank.isHigherEqualsLevel(Rank.DEVELOPER)) {
+                if (!island.isOnIsland(player)) {
                     event.setCancelled(true);
                     return;
                 }
