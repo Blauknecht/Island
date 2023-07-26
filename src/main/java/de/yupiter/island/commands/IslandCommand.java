@@ -310,6 +310,7 @@ public class IslandCommand implements CommandExecutor, TabCompleter {
             match.add("accept");
             match.add("deny");
             match.add("remove");
+            match.add("spawn");
             String name = args[0].isEmpty() ? "" : args[0];
             match.forEach(matchs -> {
                 if (matchs.contains(name)) {

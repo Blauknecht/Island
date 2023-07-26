@@ -3,7 +3,6 @@ package de.yupiter.island.listener;
 import de.kevloe.packets.types.Rank;
 import de.yupiter.island.YupiterIsland;
 import de.yupiter.island.island.Island;
-import de.yupiterapi.YupiterAPI;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

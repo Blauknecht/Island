@@ -4,6 +4,7 @@ import de.yupiter.island.YupiterIsland;
 import de.yupiter.island.island.Island;
 import de.yupiter.island.utils.Serialers;
 import de.yupiterapi.worlds.VoidGenerator;
+import lombok.Getter;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 
@@ -19,6 +20,9 @@ import java.util.stream.Collectors;
 public class IslandManager {
 
     private List<Island> islands;
+
+    @Getter
+    private Location spawn = new Location(Bukkit.getWorld("islands"), 0, 102, 0);
 
     public IslandManager() {
         this.islands = new ArrayList<>();
@@ -61,6 +65,8 @@ public class IslandManager {
             worldCreator.generateStructures(false);
             worldCreator.generator(new VoidGenerator());
             worldCreator.createWorld();
+
+            YupiterIsland.getInstance().getSchematicManager().load("spawn", 0, 100, 0);
         }
     }
 

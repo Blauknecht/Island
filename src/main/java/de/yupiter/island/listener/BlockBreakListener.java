@@ -15,15 +15,15 @@ public class BlockBreakListener implements Listener {
         Player player = event.getPlayer();
         Rank rank = YupiterIsland.getInstance().getRankAPI().getPlayerRank(player);
         Island island = YupiterIsland.getInstance().getIslandManager().getIslandAtLocation(player.getLocation());
-        if(island != null){
-            if(rank.isLowerLevel(Rank.DEVELOPER)){
+        if(rank.isLowerLevel(Rank.DEVELOPER)){
+            if(island != null){
                 if(!island.isOnIsland(player)){
                     event.setCancelled(true);
                 }
-            }
-        }else{
-            if(player.getWorld().getName().equals("islands")){
-                event.setCancelled(true);
+            }else{
+                if(player.getWorld().getName().equals("islands")){
+                    event.setCancelled(true);
+                }
             }
         }
     }

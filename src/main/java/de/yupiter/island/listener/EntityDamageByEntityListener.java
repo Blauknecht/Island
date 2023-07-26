@@ -1,5 +1,7 @@
 package de.yupiter.island.listener;
 
+import de.yupiter.island.YupiterIsland;
+import de.yupiter.island.island.Island;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -14,6 +16,17 @@ public class EntityDamageByEntityListener implements Listener {
             Player player = (Player) event.getEntity();
             if(damager.getWorld().getName().equals("islands") && player.getWorld().getName().equals("islands")){
                 event.setCancelled(true);
+            }
+        }
+        if(event.getDamager() instanceof Player){
+            Player damager = (Player) event.getDamager();
+            if(damager.getWorld().getName().equals("islands")){
+                Island island = YupiterIsland.getInstance().getIslandManager().getIslandAtLocation(damager.getLocation());
+                if(island != null){
+                    if(!island.isOnIsland(damager)){
+                        event.setCancelled(true);
+                    }
+                }
             }
         }
     }

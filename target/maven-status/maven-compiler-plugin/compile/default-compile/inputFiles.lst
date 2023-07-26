@@ -6,9 +6,13 @@ G:\Minecraft PRG\Yupiter\YupiterIsland\src\main\java\de\yupiter\island\YupiterIs
 G:\Minecraft PRG\Yupiter\YupiterIsland\src\main\java\de\yupiter\island\listener\PlayerDropItemListener.java
 G:\Minecraft PRG\Yupiter\YupiterIsland\src\main\java\de\yupiter\island\listener\PlayerInteractListener.java
 G:\Minecraft PRG\Yupiter\YupiterIsland\src\main\java\de\yupiter\island\listener\PlayerJoinListener.java
+G:\Minecraft PRG\Yupiter\YupiterIsland\src\main\java\de\yupiter\island\spawner\CustomBlock.java
+G:\Minecraft PRG\Yupiter\YupiterIsland\src\main\java\de\yupiter\island\spawner\Spawner.java
+G:\Minecraft PRG\Yupiter\YupiterIsland\src\main\java\de\yupiter\island\manager\SpawnerManager.java
 G:\Minecraft PRG\Yupiter\YupiterIsland\src\main\java\de\yupiter\island\island\Island.java
 G:\Minecraft PRG\Yupiter\YupiterIsland\src\main\java\de\yupiter\island\listener\BlockBreakListener.java
 G:\Minecraft PRG\Yupiter\YupiterIsland\src\main\java\de\yupiter\island\utils\MySQL.java
+G:\Minecraft PRG\Yupiter\YupiterIsland\src\main\java\de\yupiter\island\island\IslandSettings.java
 G:\Minecraft PRG\Yupiter\YupiterIsland\src\main\java\de\yupiter\island\listener\BlockPlaceListener.java
 G:\Minecraft PRG\Yupiter\YupiterIsland\src\main\java\de\yupiter\island\commands\IslandCommand.java
 G:\Minecraft PRG\Yupiter\YupiterIsland\src\main\java\de\yupiter\island\utils\Serialers.java
