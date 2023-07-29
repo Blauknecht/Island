@@ -14,12 +14,13 @@ public class BlockPlaceListener implements Listener {
     public void on(BlockPlaceEvent event){
         Player player = event.getPlayer();
         Rank rank = YupiterIsland.getInstance().getRankAPI().getPlayerRank(player);
-        Island island = YupiterIsland.getInstance().getIslandManager().getIslandAtLocation(player.getLocation());
+        Island island = YupiterIsland.getInstance().getIslandManager().getIslandAtLocation(event.getBlock().getLocation());
         if(rank.isLowerLevel(Rank.DEVELOPER)){
             if(island != null){
                 if(!island.isOnIsland(player)){
                     event.setCancelled(true);
                 }
+
             }else{
                 if(player.getWorld().getName().equals("islands")){
                     event.setCancelled(true);

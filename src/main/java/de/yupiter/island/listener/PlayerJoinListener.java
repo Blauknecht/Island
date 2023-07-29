@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.List;
 
@@ -30,13 +31,19 @@ public class PlayerJoinListener implements Listener {
             }
             player.sendMessage(YupiterIsland.getInstance().getPrefix()+"Du wurdest auf die Insel eingeladen von: \n"+builder.toString());
         }
-        if(!player.hasPlayedBefore()) {
+        player.setMetadata("island", new FixedMetadataValue(YupiterIsland.getInstance(), null));
+
             Bukkit.getScheduler().runTaskLater(YupiterIsland.getInstance(), new Runnable() {
                 @Override
                 public void run() {
-                    player.teleport(YupiterIsland.getInstance().getIslandManager().getSpawn());
+                    if(!player.hasPlayedBefore()) {
+                        player.teleport(YupiterIsland.getInstance().getIslandManager().getSpawn());
+                    }
+                    Island island = YupiterIsland.getInstance().getIslandManager().getIslandAtLocation(player.getLocation());
+                    if(island != null){
+                        player.setWorldBorder(island.getBorder());
+                    }
                 }
-            }, 10L);
-        }
+            }, 15L);
     }
 }

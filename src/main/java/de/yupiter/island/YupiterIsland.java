@@ -1,28 +1,18 @@
 package de.yupiter.island;
 
 import de.yupiter.island.commands.IslandCommand;
+import de.yupiter.island.commands.SpawnCommand;
+import de.yupiter.island.commands.WarzoneCommand;
 import de.yupiter.island.listener.*;
 import de.yupiter.island.manager.IslandManager;
+import de.yupiter.island.manager.PlayerManager;
 import de.yupiter.island.manager.SchematicManager;
 import de.yupiter.island.utils.MySQL;
 import de.yupiterapi.playerdata.RankAPI;
 import lombok.Getter;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.RecipeChoice;
-import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.inventory.meta.ArmorMeta;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.trim.ArmorTrim;
-import org.bukkit.inventory.meta.trim.TrimMaterial;
-import org.bukkit.inventory.meta.trim.TrimPattern;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import java.util.Arrays;
-import java.util.List;
 
 public class YupiterIsland extends JavaPlugin {
 
@@ -42,6 +32,9 @@ public class YupiterIsland extends JavaPlugin {
     private IslandManager islandManager;
 
     @Getter
+    private PlayerManager playerManager;
+
+    @Getter
     private RankAPI rankAPI;
 
     @Override
@@ -51,15 +44,19 @@ public class YupiterIsland extends JavaPlugin {
         this.rankAPI = new RankAPI();
 
         getCommand("is").setExecutor(new IslandCommand(this));
+        getCommand("spawn").setExecutor(new SpawnCommand());
+        getCommand("warzone").setExecutor(new WarzoneCommand());
 
         this.mysql = new MySQL("localhost", "root", "UcErTjhJTW82EPSJ", "skyblock");
         this.mysql.connect();
-        this.mysql.update("CREATE TABLE IF NOT EXISTS `islands` ( `IslandID` INT NOT NULL , `Owner` VARCHAR(100) NOT NULL ,`Creator` VARCHAR(100) NOT NULL , `Server` VARCHAR(100) NOT NULL , `IslandCenter` VARCHAR(100) NOT NULL , `IslandSpawn` VARCHAR(100) NOT NULL , `TrustedPlayers` LONGTEXT NULL DEFAULT NULL , `IslandLevel` INT NOT NULL , `IslandMobDropLevel` INT NOT NULL , `IslandErzDropLevel` INT NOT NULL , `IslandFarmingDropLevel` INT NOT NULL , `IslandXpDropLevel` INT NOT NULL , `IslandBans` LONGTEXT NULL DEFAULT NULL , PRIMARY KEY (`IslandID`)) ENGINE = InnoDB;");
+        this.mysql.update("CREATE TABLE IF NOT EXISTS `islands` ( `IslandID` INT NOT NULL , `Owner` VARCHAR(100) NOT NULL ,`Creator` VARCHAR(100) NOT NULL , `Created` BIGINT NOT NULL ,`Streams` BIGINT NOT NULL , `Server` VARCHAR(100) NOT NULL , `IslandCenter` VARCHAR(100) NOT NULL , `IslandSpawn` VARCHAR(100) NOT NULL , `TrustedPlayers` LONGTEXT NULL DEFAULT NULL , `IslandLevel` INT NOT NULL , `IslandMobDropLevel` INT NOT NULL , `IslandErzDropLevel` INT NOT NULL , `IslandFarmingDropLevel` INT NOT NULL , `IslandXpDropLevel` INT NOT NULL , `IslandBans` LONGTEXT NULL DEFAULT NULL , PRIMARY KEY (`IslandID`)) ENGINE = InnoDB;");
         this.mysql.update("CREATE TABLE IF NOT EXISTS `islandsWarps` (`IslandID` INT NOT NULL , `WarpName` VARCHAR(100) NOT NULL , `WarpCords` VARCHAR(100) NOT NULL , PRIMARY KEY (`IslandID`)) ENGINE = InnoDB;");
         this.mysql.update("CREATE TABLE IF NOT EXISTS `islandSpawner` (`IslandID` INT NOT NULL , `SpawnerName` VARCHAR(100) NOT NULL , `SpawnerCoords` VARCHAR(100) NOT NULL , `SpawnerLevel` INT NOT NULL , PRIMARY KEY (`IslandID`)) ENGINE = InnoDB;");
+        this.mysql.update("CREATE TABLE IF NOT EXISTS `islandsDeletes` (`IslandID` INT NOT NULL , `Owner` VARCHAR(100) NOT NULL , `TrustedPlayers` LONGTEXT NOT NULL , `Timestamp` BIGINT NOT NULL , `Location` LONGTEXT NOT NULL , PRIMARY KEY (`IslandID`)) ENGINE = InnoDB;");
 
         this.schematicManager = new SchematicManager();
         this.islandManager = new IslandManager();
+        this.playerManager = new PlayerManager();
 
         PluginManager pluginManager = Bukkit.getPluginManager();
         pluginManager.registerEvents(new PlayerJoinListener(), this);

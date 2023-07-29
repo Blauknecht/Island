@@ -1,5 +1,6 @@
 package de.yupiter.island.manager;
 
+import de.dytanic.cloudnet.driver.CloudNetDriver;
 import de.yupiter.island.YupiterIsland;
 import de.yupiter.island.island.Island;
 import de.yupiter.island.utils.Serialers;
@@ -8,6 +9,7 @@ import lombok.Getter;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -22,12 +24,13 @@ public class IslandManager {
     private List<Island> islands;
 
     @Getter
-    private Location spawn = new Location(Bukkit.getWorld("islands"), 0, 102, 0);
+    private Location spawn;
 
     public IslandManager() {
         this.islands = new ArrayList<>();
         this.createWorld();
         this.loadIslands();
+        spawn = new Location(Bukkit.getWorld("islands"), 0, 102, 0);
     }
 
     public void createIsland(Player player) {
@@ -37,7 +40,7 @@ public class IslandManager {
             Location location = this.getCenterFromId(id);
             Location spawn = new Location(Bukkit.getWorld("islands"), location.getBlockX(), 100, location.getBlockZ() + 2);
 
-            island = new Island(id, spawn, location, player, player, new ArrayList<>(), new ArrayList<>(), 1);
+            island = new Island(id, spawn, location, player, player, 0, new ArrayList<>(), new ArrayList<>(), 1);
             this.islands.add(island);
 
             player.sendMessage(YupiterIsland.getInstance().getPrefix() + "Deine Insel wird erstellt...");
@@ -46,9 +49,49 @@ public class IslandManager {
 
             player.teleport(spawn);
             player.sendMessage(YupiterIsland.getInstance().getPrefix() + "Du wurdest zu deiner Insel teleportiert!");
+            player.setWorldBorder(island.getBorder());
 
             island.save(true);
         }
+    }
+    public void deleteIsland(Island island){
+        Connection connection = YupiterIsland.getInstance().getMysql().getConnection();
+        CompletableFuture.runAsync(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    PreparedStatement statement = connection.prepareStatement("INSERT INTO islandsDeletes(`IslandID`, `Owner`, `TrustedPlayers`, `Timestamp`, `Location`) VALUES (?,?,?,?,?);");
+                    statement.setObject(1, island.getId());
+                    statement.setObject(2, island.getOwner().getUniqueId().toString());
+                    if(!island.getTrustedPlayers().isEmpty()){
+                        statement.setObject(3, Serialers.ListToString(island.getTrustedPlayers()));
+                    }else{
+                        statement.setObject(3, null);
+                    }
+                    statement.setObject(4, System.currentTimeMillis());
+                    statement.setObject(5, Serialers.toString(island.getCenterLocation()));
+                    statement.execute();
+                    statement.closeOnCompletion();
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+        CompletableFuture.runAsync(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    PreparedStatement statement = connection.prepareStatement("DELETE FROM islands WHERE Creator = ?;");
+                    statement.setObject(1, island.getCreator());
+                    statement.execute();
+                    statement.closeOnCompletion();
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+        this.islands.remove(island);
+        Bukkit.getLogger().info("Island with the id "+island.getId()+" was deleted!");
     }
 
     private Location getCenterFromId(int id) {
@@ -80,9 +123,11 @@ public class IslandManager {
         return this.islands.stream().filter(island -> island.getInvitePlayers().contains(player.getUniqueId())).collect(Collectors.toList());
     }
     public Island getIslandAtLocation(Location location){
-        return this.islands.stream().filter(island -> island.getCenterLocation().distance(location) <= island.getIslandSize().getSize()).findAny().orElse(null);
+        return this.islands.stream().filter(island -> island.getCenterLocation().distance(location) < island.getIslandSize().getSize()).findFirst().orElse(null);
     }
-
+    public List<Player> getPlayersOnIsland(Island island){
+        return Bukkit.getOnlinePlayers().stream().filter(player -> player.getLocation().distance(island.getCenterLocation()) < island.getIslandSize().getSize()).collect(Collectors.toList());
+    }
 
     private void loadIslands() {
         CompletableFuture.runAsync(() -> {
@@ -96,12 +141,13 @@ public class IslandManager {
                     islands++;
 
                     int id = set.getInt("IslandID");
+                    int streams = set.getInt("Streams");
                     Location spawn = Serialers.locFromString(set.getString("IslandSpawn"));
                     Location centerLocation = Serialers.locFromString(set.getString("IslandCenter"));
                     OfflinePlayer owner = Bukkit.getOfflinePlayer(UUID.fromString(set.getString("Owner")));
                     OfflinePlayer creator = Bukkit.getOfflinePlayer(UUID.fromString(set.getString("Creator")));
-                    List<UUID> trustedPlayers = Serialers.StringtoList(set.getString("TrustedPlayers"));
-                    List<UUID> bannedPlayers = Serialers.StringtoList(set.getString("IslandBans"));
+                    List<OfflinePlayer> trustedPlayers = Serialers.StringtoList(set.getString("TrustedPlayers"));
+                    List<OfflinePlayer> bannedPlayers = Serialers.StringtoList(set.getString("IslandBans"));
                     int level = set.getInt("IslandLevel");
 
                     if(trustedPlayers == null){
@@ -111,7 +157,7 @@ public class IslandManager {
                         bannedPlayers = new ArrayList<>();
                     }
 
-                    Island island = new Island(id, spawn, centerLocation, owner, creator, trustedPlayers, bannedPlayers, level);
+                    Island island = new Island(id, spawn, centerLocation, owner, creator, streams, trustedPlayers, bannedPlayers, level);
                     this.islands.add(island);
 
                     int mobDropLevel = set.getInt("IslandMobDropLevel");

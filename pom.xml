@@ -37,6 +37,14 @@
             <id>papermc</id>
             <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+        <repository>
+            <id>cloudnet-releases</id>
+            <url>https://repo.cloudnetservice.eu/repository/releases/</url>
+        </repository>
     </repositories>
 
     <dependencyManagement>
@@ -66,11 +74,24 @@
         <dependency>
             <groupId>yupiter</groupId>
             <artifactId>yupiterapi</artifactId>
-            <version>1.24-SNAPSHOT</version>
+            <version>1.26-SNAPSHOT</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.fastasyncworldedit</groupId>
             <artifactId>FastAsyncWorldEdit-Core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>de.dytanic.cloudnet</groupId>
+            <artifactId>cloudnet-driver</artifactId>
+            <version>3.4.0-RELEASE</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>de.dytanic.cloudnet</groupId>
+            <artifactId>cloudnet-bridge</artifactId>
+            <version>3.4.0-RELEASE</version>
             <scope>provided</scope>
         </dependency>
 
@@ -84,18 +105,6 @@
                     <groupId>*</groupId>
                 </exclusion>
             </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>de.kevloe.cloud</groupId>
-            <artifactId>CloudDriver</artifactId>
-            <version>4.4.0-SNAPSHOT</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/lib/cloudnet-driver.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>de.yupiter.packets</groupId>
-            <artifactId>packets</artifactId>
-            <version>1.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

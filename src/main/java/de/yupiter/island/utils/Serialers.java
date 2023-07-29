@@ -2,6 +2,7 @@ package de.yupiter.island.utils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,20 +34,20 @@ public class Serialers {
         return newLoc.clone();
     }
 
-    public static String ListToString(List<?> list){
+    public static String ListToString(List<OfflinePlayer> list){
         StringBuilder builder = new StringBuilder();
         list.forEach(o -> {
-            builder.append(o).append("@");
+            builder.append(o.getUniqueId().toString()).append("@");
         });
         return builder.toString();
     }
-    public static List<UUID> StringtoList(String string){
+    public static List<OfflinePlayer> StringtoList(String string){
         if(string == null || string.isEmpty()){
             return null;
         }
-        List<UUID> list = new ArrayList<>();
+        List<OfflinePlayer> list = new ArrayList<>();
         for (String s : string.split("@")) {
-            list.add(UUID.fromString(s));
+            list.add(Bukkit.getOfflinePlayer(UUID.fromString(s)));
         }
         return list;
     }

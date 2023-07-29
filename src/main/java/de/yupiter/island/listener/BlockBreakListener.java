@@ -8,13 +8,15 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 
+import java.util.Arrays;
+
 public class BlockBreakListener implements Listener {
 
     @EventHandler
     public void on(BlockBreakEvent event){
         Player player = event.getPlayer();
         Rank rank = YupiterIsland.getInstance().getRankAPI().getPlayerRank(player);
-        Island island = YupiterIsland.getInstance().getIslandManager().getIslandAtLocation(player.getLocation());
+        Island island = YupiterIsland.getInstance().getIslandManager().getIslandAtLocation(event.getBlock().getLocation());
         if(rank.isLowerLevel(Rank.DEVELOPER)){
             if(island != null){
                 if(!island.isOnIsland(player)){

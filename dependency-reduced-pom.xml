@@ -68,6 +68,14 @@
       <id>papermc</id>
       <url>https://repo.papermc.io/repository/maven-public/</url>
     </repository>
+    <repository>
+      <id>jitpack.io</id>
+      <url>https://jitpack.io</url>
+    </repository>
+    <repository>
+      <id>cloudnet-releases</id>
+      <url>https://repo.cloudnetservice.eu/repository/releases/</url>
+    </repository>
   </repositories>
   <dependencies>
     <dependency>
@@ -95,6 +103,26 @@
         <exclusion>
           <artifactId>snakeyaml</artifactId>
           <groupId>org.yaml</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>yupiter</groupId>
+      <artifactId>yupiterapi</artifactId>
+      <version>1.26-SNAPSHOT</version>
+      <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <artifactId>commons-configuration</artifactId>
+          <groupId>commons-configuration</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>commons-collections</artifactId>
+          <groupId>commons-collections</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>netty-all</artifactId>
+          <groupId>io.netty</groupId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -163,6 +191,54 @@
       </exclusions>
     </dependency>
     <dependency>
+      <groupId>de.dytanic.cloudnet</groupId>
+      <artifactId>cloudnet-driver</artifactId>
+      <version>3.4.0-RELEASE</version>
+      <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <artifactId>cloudnet-common</artifactId>
+          <groupId>de.dytanic.cloudnet</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>netty-handler</artifactId>
+          <groupId>io.netty</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>netty-codec-http</artifactId>
+          <groupId>io.netty</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>netty-transport-native-epoll</artifactId>
+          <groupId>io.netty</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>netty-transport-native-kqueue</artifactId>
+          <groupId>io.netty</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>annotations</artifactId>
+          <groupId>org.jetbrains</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>javassist</artifactId>
+          <groupId>org.javassist</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>de.dytanic.cloudnet</groupId>
+      <artifactId>cloudnet-bridge</artifactId>
+      <version>3.4.0-RELEASE</version>
+      <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <artifactId>annotations</artifactId>
+          <groupId>org.jetbrains</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
       <groupId>com.fastasyncworldedit</groupId>
       <artifactId>FastAsyncWorldEdit-Bukkit</artifactId>
       <version>2.7.0</version>
@@ -217,13 +293,6 @@
           <groupId>it.unimi.dsi</groupId>
         </exclusion>
       </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>de.kevloe.cloud</groupId>
-      <artifactId>CloudDriver</artifactId>
-      <version>4.4.0-SNAPSHOT</version>
-      <scope>system</scope>
-      <systemPath>G:\Minecraft PRG\Yupiter\YupiterIsland/lib/cloudnet-driver.jar</systemPath>
     </dependency>
   </dependencies>
   <dependencyManagement>

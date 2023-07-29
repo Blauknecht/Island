@@ -3,6 +3,7 @@ package de.yupiter.island.commands;
 import de.kevloe.packets.types.Rank;
 import de.yupiter.island.YupiterIsland;
 import de.yupiter.island.island.Island;
+import de.yupiter.island.island.IslandSize;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -18,6 +19,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -43,19 +45,47 @@ public class IslandCommand implements CommandExecutor, TabCompleter {
                 if (island != null) {
                     player.teleport(island.getSpawn());
                     player.sendMessage(YupiterIsland.getInstance().getPrefix() + "Du wurdest zu deiner Insel teleportiert.");
+                    player.setWorldBorder(island.getBorder());
                 } else {
                     player.sendMessage(YupiterIsland.getInstance().getPrefix() + "/is create §8- §7Erstelle dir eine Insel.");
                 }
                 return true;
             } else if (args.length == 1) {
                 if (args[0].equalsIgnoreCase("delete")) {
+                    if (island == null) {
+                        player.sendMessage(YupiterIsland.getInstance().getPrefix() + "Du hast keine Insel.");
+                        return false;
+                    }
+                    if (!island.getOwner().getUniqueId().equals(player.getUniqueId())) {
+                        player.sendMessage(YupiterIsland.getInstance().getPrefix() + "Du bist nicht der Insel Besitzer.");
+                        return false;
+                    }
+                    if(!island.isCheckDelete()){
+                        player.sendMessage(YupiterIsland.getInstance().getPrefix()+"Bestätige die Löschung deiner Insel mit §b/is delete§7.");
+                        island.setCheckDelete(true);
+                        return false;
+                    }
+                    island.getTrustedPlayers().forEach(offlinePlayer -> {
+                        if(offlinePlayer.getPlayer() != null){
+                            offlinePlayer.getPlayer().sendMessage(YupiterIsland.getInstance().getPrefix()+"Der Inselbesitzer §b"+island.getOwner().getName()+" §7hat seine Insel §cgelöscht§7.");
+                            offlinePlayer.getPlayer().teleport(YupiterIsland.getInstance().getIslandManager().getSpawn());
+                        }
+                        island.getTrustedPlayers().remove(offlinePlayer);
+                    });
+                    YupiterIsland.getInstance().getIslandManager().deleteIsland(island);
+                    player.teleport(YupiterIsland.getInstance().getIslandManager().getSpawn());
+                    player.sendMessage(YupiterIsland.getInstance().getPrefix()+"Du hast deine Insel erfolgreich gelöscht.");
+                    return true;
+                }
+                if(args[0].equalsIgnoreCase("test")){
+                    if(island != null){
+                        island.setIslandSize(IslandSize.NORMAL);
+                        island.updateBorder();
+                    }
                     return true;
                 }
                 if (args[0].equalsIgnoreCase("settings")) {
-                    return true;
-                }
-                if (args[0].equalsIgnoreCase("spawn")) {
-                    player.teleport(YupiterIsland.getInstance().getIslandManager().getSpawn());
+                    //TODO
                     return true;
                 }
                 if (args[0].equalsIgnoreCase("blocks")) {
@@ -86,22 +116,20 @@ public class IslandCommand implements CommandExecutor, TabCompleter {
                     player.sendMessage(YupiterIsland.getInstance().getPrefix() + "Insel-Inhaber: §b" + locationIsland.getOwner().getName());
                     player.sendMessage(YupiterIsland.getInstance().getPrefix() + "Insel wurde erstellt von: §b" + locationIsland.getCreator().getName());
                     player.sendMessage(YupiterIsland.getInstance().getPrefix() + "Insel-Level: §b" + locationIsland.getLevel());
-                    player.sendMessage(YupiterIsland.getInstance().getPrefix() + "Insel-Größe: §b" + locationIsland.getIslandSize().getSize() + "Blöcke §7(§b" + locationIsland.getIslandSize().getName() + "§7)");
+                    player.sendMessage(YupiterIsland.getInstance().getPrefix() + "Insel-Größe: §b" + locationIsland.getIslandSize().getSize() + " Blöcke §7(§b" + locationIsland.getIslandSize().getName() + "§7)");
                     player.sendMessage(YupiterIsland.getInstance().getPrefix() + "Besuchbar: §a✔");
                     if (!locationIsland.getTrustedPlayers().isEmpty()) {
                         player.sendMessage(YupiterIsland.getInstance().getPrefix() + "Vertraute Spieler: ");
-                        locationIsland.getTrustedPlayers().forEach(uuid -> {
-                            OfflinePlayer trustedPlayer = Bukkit.getOfflinePlayer(uuid);
-                            player.sendMessage(YupiterIsland.getInstance().getPrefix() + " ➥ §b" + trustedPlayer.getName());
+                        locationIsland.getTrustedPlayers().forEach(offlinePlayer -> {
+                            player.sendMessage(YupiterIsland.getInstance().getPrefix() + " ➥ §b" + offlinePlayer.getName());
                         });
                     } else {
                         player.sendMessage(YupiterIsland.getInstance().getPrefix() + "Vertraute Spieler: §b-");
                     }
                     if (!locationIsland.getBanPlayers().isEmpty()) {
                         player.sendMessage(YupiterIsland.getInstance().getPrefix() + "Gebannte Spieler: ");
-                        locationIsland.getTrustedPlayers().forEach(uuid -> {
-                            OfflinePlayer trustedPlayer = Bukkit.getOfflinePlayer(uuid);
-                            player.sendMessage(YupiterIsland.getInstance().getPrefix() + " ➥ §c" + trustedPlayer.getName());
+                        locationIsland.getTrustedPlayers().forEach(offlinePlayer -> {
+                            player.sendMessage(YupiterIsland.getInstance().getPrefix() + " ➥ §c" + offlinePlayer.getName());
                         });
                     } else {
                         player.sendMessage(YupiterIsland.getInstance().getPrefix() + "Gebannte Spieler: §b-");
@@ -129,6 +157,7 @@ public class IslandCommand implements CommandExecutor, TabCompleter {
                     }
                     island.setSpawn(player.getLocation());
                     player.sendMessage(YupiterIsland.getInstance().getPrefix() + "Du hast den neuen Inselspawn gesetzt.");
+
                     return true;
                 }
                 if (args[0].equalsIgnoreCase("level")) {
@@ -192,18 +221,76 @@ public class IslandCommand implements CommandExecutor, TabCompleter {
                     return true;
                 }
                 if (args[0].equalsIgnoreCase("kick")) {
+                    if (island == null) {
+                        player.sendMessage(YupiterIsland.getInstance().getPrefix() + "Du hast keine Insel.");
+                        return false;
+                    }
+                    if(target.getPlayer() == null){
+                        player.sendMessage(YupiterIsland.getInstance().getPrefix() + "Dieser Spieler ist nicht online.");
+                        return false;
+                    }
+                    Island targetIsland = YupiterIsland.getInstance().getIslandManager().getIslandAtLocation(target.getPlayer().getLocation());
+                    if(targetIsland != null && targetIsland != island){
+                        player.sendMessage(YupiterIsland.getInstance().getPrefix() + "Dieser Spieler ist nicht auf deiner Insel.");
+                        return false;
+                    }
+                    target.getPlayer().sendMessage(YupiterIsland.getInstance().getPrefix()+"Du wurdest von der Insel von §b"+island.getOwner().getName()+" §7gekickt.");
+                    player.sendMessage(YupiterIsland.getInstance().getPrefix()+"Du hast den Spieler §b"+target.getName()+" §7von der Insel gekickt.");
+                    target.getPlayer().teleport(YupiterIsland.getInstance().getIslandManager().getSpawn());
                     return true;
                 }
                 if (args[0].equalsIgnoreCase("ban")) {
+                    if (island == null) {
+                        player.sendMessage(YupiterIsland.getInstance().getPrefix() + "Du hast keine Insel.");
+                        return false;
+                    }
+                    if (!island.getOwner().getUniqueId().equals(player.getUniqueId())) {
+                        player.sendMessage(YupiterIsland.getInstance().getPrefix() + "Du bist nicht der Insel Owner.");
+                        return false;
+                    }
+                    Island targetIsland = YupiterIsland.getInstance().getIslandManager().getIslandAtLocation(target.getPlayer().getLocation());
+                    if(targetIsland != null && targetIsland != island){
+                        player.sendMessage(YupiterIsland.getInstance().getPrefix() + "Dieser Spieler ist nicht auf deiner Insel.");
+                        return false;
+                    }
+                    target.getPlayer().sendMessage(YupiterIsland.getInstance().getPrefix()+"Du wurdest von der Insel von §b"+island.getOwner().getName()+" §7gebannt.");
+                    player.sendMessage(YupiterIsland.getInstance().getPrefix()+"Du hast den Spieler §b"+target.getName()+" §7von der Insel gebannt.");
+                    island.getBanPlayers().add(target);
+                    island.save(false);
+                    target.getPlayer().teleport(YupiterIsland.getInstance().getIslandManager().getSpawn());
                     return true;
                 }
                 if (args[0].equalsIgnoreCase("unban")) {
+                    if (island == null) {
+                        player.sendMessage(YupiterIsland.getInstance().getPrefix() + "Du hast keine Insel.");
+                        return false;
+                    }
+                    if (!island.getOwner().getUniqueId().equals(player.getUniqueId())) {
+                        player.sendMessage(YupiterIsland.getInstance().getPrefix() + "Du bist nicht der Insel Owner.");
+                        return false;
+                    }
+                    if(!island.getBanPlayers().contains(target)){
+                        player.sendMessage(YupiterIsland.getInstance().getPrefix() + "Dieser Spieler ist nicht gebannt.");
+                        return false;
+                    }
+                    player.sendMessage(YupiterIsland.getInstance().getPrefix()+"Du hast den Spieler §b"+target.getName()+" §7von der Insel entbannt.");
+                    island.getBanPlayers().remove(target);
+                    island.save(false);
                     return true;
                 }
                 if (args[0].equalsIgnoreCase("visit")) {
+                    Island targetIsland = YupiterIsland.getInstance().getIslandManager().getIsland(target.getUniqueId());
+                    if (targetIsland == null) {
+                        player.sendMessage(YupiterIsland.getInstance().getPrefix() + "Dieser Spieler hat keine Insel.");
+                        return false;
+                    }
+                    player.sendMessage(YupiterIsland.getInstance().getPrefix()+"Du besuchst nun die Insel von §b"+target.getName());
+                    player.teleport(targetIsland.getSpawn());
+                    player.setWorldBorder(targetIsland.getBorder());
                     return true;
                 }
                 if (args[0].equalsIgnoreCase("warp")) {
+                    //TODO
                     return true;
                 }
                 if (args[0].equalsIgnoreCase("accept")) {
@@ -328,7 +415,6 @@ public class IslandCommand implements CommandExecutor, TabCompleter {
             match.add("accept");
             match.add("deny");
             match.add("remove");
-            match.add("spawn");
             String name = args[0].isEmpty() ? "" : args[0];
             match.forEach(matchs -> {
                 if (matchs.contains(name)) {
@@ -350,16 +436,52 @@ public class IslandCommand implements CommandExecutor, TabCompleter {
                 tabs.add("2");
             }
             if (args[0].equalsIgnoreCase("kick") || args[0].equalsIgnoreCase("ban")) {
-                //tabs für die auf der Insel sind
+                if(sender instanceof Player){
+                    Player player = (Player) sender;
+                    Island island = YupiterIsland.getInstance().getIslandManager().getIsland(player.getUniqueId());
+                    String name = args[1].isEmpty() ? "" : args[1];
+                    YupiterIsland.getInstance().getIslandManager().getPlayersOnIsland(island).forEach(players ->{
+                        if(players.getName().contains(name)){
+                            tabs.add(players.getName());
+                        }
+                    });
+                }
             }
             if (args[0].equalsIgnoreCase("remove")) {
-                //tabs für die die getrusted sind
+                if(sender instanceof Player){
+                    Player player = (Player) sender;
+                    Island island = YupiterIsland.getInstance().getIslandManager().getIsland(player.getUniqueId());
+                    String name = args[1].isEmpty() ? "" : args[1];
+                    island.getTrustedPlayers().forEach(offlinePlayer -> {
+                        if(offlinePlayer.getName().contains(name)){
+                            tabs.add(offlinePlayer.getName());
+                        }
+                    });
+                }
             }
             if (args[0].equalsIgnoreCase("unban")) {
-                //tabs für die die von der insel gebannt sind
+                if(sender instanceof Player){
+                    Player player = (Player) sender;
+                    Island island = YupiterIsland.getInstance().getIslandManager().getIsland(player.getUniqueId());
+                    String name = args[1].isEmpty() ? "" : args[1];
+                    island.getBanPlayers().forEach(offlinePlayer -> {
+                        if(offlinePlayer.getName().contains(name)){
+                            tabs.add(offlinePlayer.getName());
+                        }
+                    });
+                }
             }
             if (args[0].equalsIgnoreCase("deny") || args[0].equalsIgnoreCase("acccept")) {
-                //tabs für die ein inselinvite an steht
+                if(sender instanceof Player){
+                    Player player = (Player) sender;
+                    String name = args[1].isEmpty() ? "" : args[1];
+                    YupiterIsland.getInstance().getIslandManager().getInvitedIslands(player).forEach(island -> {
+                        if(island.getOwner().getName().contains(name)){
+                            tabs.add(island.getOwner().getName());
+                        }
+                    });
+
+                }
             }
         }
         return tabs;
