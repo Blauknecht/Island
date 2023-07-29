@@ -8,6 +8,8 @@ import de.yupiter.island.manager.IslandManager;
 import de.yupiter.island.manager.PlayerManager;
 import de.yupiter.island.manager.SchematicManager;
 import de.yupiter.island.utils.MySQL;
+import de.yupiter.island.utils.ScoreboardUpdater;
+import de.yupiterapi.YupiterAPI;
 import de.yupiterapi.playerdata.RankAPI;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -68,6 +70,10 @@ public class YupiterIsland extends JavaPlugin {
         pluginManager.registerEvents(new PlayerDropItemListener(), this);
         pluginManager.registerEvents(new PlayerQuitListener(), this);
         pluginManager.registerEvents(new PlayerDeathListener(), this);
+        pluginManager.registerEvents(new EntitySpawnListener(), this);
+        pluginManager.registerEvents(new PlayerMoveListener(), this);
+
+        YupiterAPI.instance.getClient().getPacketGetters().add(new ScoreboardUpdater());
     }
 
     @Override
