@@ -26,6 +26,8 @@ public class IslandManager {
     @Getter
     private Location spawn;
 
+    private int lastIslandID = 0;
+
     public IslandManager() {
         this.islands = new ArrayList<>();
         this.createWorld();
@@ -36,7 +38,7 @@ public class IslandManager {
     public void createIsland(Player player) {
         Island island = getIsland(player.getUniqueId());
         if (island == null) {
-            int id = this.islands.size() + 1;
+            int id = this.lastIslandID + 1;
             Location location = this.getCenterFromId(id);
             Location spawn = new Location(Bukkit.getWorld("islands"), location.getBlockX(), 100, location.getBlockZ() + 2);
 
@@ -141,6 +143,11 @@ public class IslandManager {
                     islands++;
 
                     int id = set.getInt("IslandID");
+
+                    if(id > this.lastIslandID){
+                        this.lastIslandID = id;
+                    }
+
                     int streams = set.getInt("Streams");
                     Location spawn = Serialers.locFromString(set.getString("IslandSpawn"));
                     Location centerLocation = Serialers.locFromString(set.getString("IslandCenter"));
