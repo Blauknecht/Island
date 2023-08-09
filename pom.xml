@@ -24,16 +24,6 @@
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
         <repository>
-            <id>api</id>
-            <name>GitHub YupiterMC Apache Maven Packages</name>
-            <url>https://maven.pkg.github.com/YupiterMC/YupiterAPI</url>
-        </repository>
-        <repository>
-            <id>packets</id>
-            <name>GitHub YupiterMC Apache Maven Packages</name>
-            <url>https://maven.pkg.github.com/YupiterMC/Packets</url>
-        </repository>
-        <repository>
             <id>papermc</id>
             <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
@@ -44,6 +34,14 @@
         <repository>
             <id>cloudnet-releases</id>
             <url>https://repo.cloudnetservice.eu/repository/releases/</url>
+        </repository>
+        <repository>
+            <id>plunaapi</id>
+            <url>https://maven.pkg.github.com/PlunaMC/PlunaAPI</url>
+        </repository>
+        <repository>
+            <id>packets</id>
+            <url>https://maven.pkg.github.com/PlunaMC/Packets</url>
         </repository>
     </repositories>
 
@@ -72,12 +70,6 @@
             <version>1.18.26</version>
         </dependency>
         <dependency>
-            <groupId>yupiter</groupId>
-            <artifactId>yupiterapi</artifactId>
-            <version>1.26-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>com.fastasyncworldedit</groupId>
             <artifactId>FastAsyncWorldEdit-Core</artifactId>
             <scope>provided</scope>
@@ -89,10 +81,32 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>PlunaMC</groupId>
+            <artifactId>plunaapi</artifactId>
+            <version>1.4-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>de.pluna.packets</groupId>
+            <artifactId>packets</artifactId>
+            <version>1.10-SNAPSHOT</version>
+        </dependency>
+        <dependency>
             <groupId>de.dytanic.cloudnet</groupId>
             <artifactId>cloudnet-bridge</artifactId>
             <version>3.4.0-RELEASE</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>test.citizens</groupId>
+            <artifactId>citizens</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/Citizens-2.0.32-b3115.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>1.33</version>
         </dependency>
 
         <dependency>
@@ -126,8 +140,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.1</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>16</source>
+                    <target>16</target>
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
@@ -145,9 +159,6 @@
                 </executions>
                 <configuration>
                     <artifactSet>
-                        <includes>
-
-                        </includes>
                     </artifactSet>
                 </configuration>
             </plugin>

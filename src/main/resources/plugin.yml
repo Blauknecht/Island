@@ -1,11 +1,12 @@
-name: YupiterIsland
+name: PlunaMC-Island
 version: 1.0
 author: Kevloe
 api-version: 1.19
-main: de.yupiter.island.YupiterIsland
+main: de.plunamc.island.PlunaIsland
 depend:
-  - YupiterAPI
+  - PlunaAPI
 commands:
   is:
   spawn:
   warzone:
+  updateborder:
