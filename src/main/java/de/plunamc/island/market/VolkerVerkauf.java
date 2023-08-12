@@ -130,10 +130,18 @@ public enum VolkerVerkauf {
         this.material = material;
         this.sellprice = sellprice;
     }
-    public Material getMaterial() {
-        return material;
+
+    public static int getMaterialPrice(Material material){
+        for (VolkerVerkauf value : values()) {
+            if(value.getMaterial().equals(material)) return value.getSellprice();
+        }
+        return 0;
     }
-    public int getSellPrice() {
-        return sellprice;
+
+    public static boolean isMaterialInList(Material material){
+        for (VolkerVerkauf value : values()) {
+            if(value.getMaterial().equals(material)) return true;
+        }
+        return false;
     }
 }
