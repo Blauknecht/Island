@@ -167,7 +167,7 @@ public class Island {
 
     public void addPlayer(UUID addPlayerUUID) {
         OfflinePlayer player = Bukkit.getOfflinePlayer(addPlayerUUID);
-        if (!this.trustedPlayers.contains(addPlayerUUID)) {
+        if (!this.trustedPlayers.contains(player)) {
             this.trustedPlayers.add(player);
             if (this.getInvitePlayers().contains(addPlayerUUID)) {
                 this.getInvitePlayers().remove(addPlayerUUID);
@@ -188,7 +188,7 @@ public class Island {
 
     public void removePlayer(UUID removePlayerUUID) {
         OfflinePlayer player = Bukkit.getOfflinePlayer(removePlayerUUID);
-        if (this.trustedPlayers.contains(removePlayerUUID)) {
+        if (this.trustedPlayers.contains(player)) {
             this.trustedPlayers.remove(removePlayerUUID);
             this.save(false);
             if (player.getPlayer() != null) {
@@ -206,7 +206,7 @@ public class Island {
 
     public void leave(UUID playerUUID) {
         OfflinePlayer player = Bukkit.getOfflinePlayer(playerUUID);
-        if (this.trustedPlayers.contains(playerUUID)) {
+        if (this.trustedPlayers.contains(player)) {
             this.trustedPlayers.remove(playerUUID);
             this.save(false);
             if (player.getPlayer() != null) {
@@ -242,7 +242,7 @@ public class Island {
     }
 
     public boolean isOnIsland(Player player) {
-        return (this.getOwner().getUniqueId().equals(player.getUniqueId())) || (this.trustedPlayers.contains(player.getUniqueId()));
+        return (this.getOwner().getUniqueId().equals(player.getUniqueId())) || (this.isTrustedPlayer(player.getUniqueId()));
     }
 
     public String getTrustedPlayerString() {
@@ -316,7 +316,7 @@ public class Island {
                     }
                 }else{
                     try {
-                        PreparedStatement statement = connection.prepareStatement("UPDATE islands SET `Owner` = ?, `Streams` = ?, `IslandSpawn` = ?, `TrustedPlayers` = ?, `IslandLevel` = ?,`IslandExp` = ?, `IslandMobDropLevel` = ?, `IslandErzDropLevel` = ?, `IslandFarmingDropLevel` = ?, `IslandXPDropLevel` = ?, `IslandBans` = ? WHERE Creator = ?;");
+                        PreparedStatement statement = connection.prepareStatement("UPDATE islands SET `Owner` = ?, `Streams` = ?, `IslandSpawn` = ?, `TrustedPlayers` = ?, `IslandLevel` = ?,`IslandExp` = ?, `IslandMobDropLevel` = ?, `IslandErzDropLevel` = ?, `IslandFarmingDropLevel` = ?, `IslandXPDropLevel` = ?, `IslandBans` = ? WHERE `Creator` = ?;");
                         statement.setObject(1, owner.getUniqueId().toString());
                         statement.setObject(2, streams);
                         statement.setObject(3, Serialers.toString(spawn));

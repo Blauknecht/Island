@@ -7,6 +7,7 @@ import de.plunamc.island.utils.Serialers;
 import lombok.Getter;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
+import org.joml.Vector2d;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -47,7 +48,7 @@ public class IslandManager {
 
             player.sendMessage(PlunaIsland.getInstance().getPrefix() + "Deine Insel wird erstellt...");
 
-            PlunaIsland.getInstance().getSchematicManager().load("island", location.getX(), location.getY(), location.getZ());
+            PlunaIsland.getInstance().getSchematicManager().load("island", location.getX(), location.getY(), location.getZ(), "islands");
 
             player.teleport(spawn);
             player.sendMessage(PlunaIsland.getInstance().getPrefix() + "Du wurdest zu deiner Insel teleportiert!");
@@ -72,6 +73,7 @@ public class IslandManager {
                     }
                     statement.setObject(4, System.currentTimeMillis());
                     statement.setObject(5, Serialers.toString(island.getCenterLocation()));
+                    System.out.println(statement.toString());
                     statement.execute();
                     statement.closeOnCompletion();
                 } catch (SQLException e) {
@@ -83,8 +85,8 @@ public class IslandManager {
             @Override
             public void run() {
                 try {
-                    PreparedStatement statement = connection.prepareStatement("DELETE FROM islands WHERE Creator = ?;");
-                    statement.setObject(1, island.getCreator());
+                    PreparedStatement statement = connection.prepareStatement("DELETE FROM islands WHERE `Creator` = ?;");
+                    statement.setObject(1, island.getCreator().getUniqueId().toString());
                     statement.execute();
                     statement.closeOnCompletion();
                 } catch (SQLException e) {
@@ -112,12 +114,19 @@ public class IslandManager {
             worldCreator.generator(new VoidGenerator());
             worldCreator.createWorld();
 
-            PlunaIsland.getInstance().getSchematicManager().load("spawn", 0, 100, 0);
+            PlunaIsland.getInstance().getSchematicManager().load("spawn", 0, 100, 0, "spawn");
+        }
+        if (Bukkit.getWorld("islands") == null) {
+            WorldCreator worldCreator = new WorldCreator("islands");
+            worldCreator.type(WorldType.FLAT);
+            worldCreator.generateStructures(false);
+            worldCreator.generator(new VoidGenerator());
+            worldCreator.createWorld();
         }
     }
 
     public Island getIsland(UUID player){
-        return this.islands.stream().filter(island -> (island.getOwner().getUniqueId().equals(player) || (island.getTrustedPlayers().contains(player)))).findAny().orElse(null);
+        return this.islands.stream().filter(island -> (island.getOwner().getUniqueId().equals(player) || (island.isTrustedPlayer(player)))).findAny().orElse(null);
     }
     public Island getInvitedIsland(Player player, String name){
         return this.islands.stream().filter(island -> (island.getInvitePlayers().contains(player.getUniqueId())) && (island.getOwner().getName().equals(name))).findAny().orElse(null);
@@ -126,63 +135,66 @@ public class IslandManager {
         return this.islands.stream().filter(island -> island.getInvitePlayers().contains(player.getUniqueId())).collect(Collectors.toList());
     }
     public Island getIslandAtLocation(Location location){
-        return this.islands.stream().filter(island -> island.getCenterLocation().distance(location) < island.getIslandSize().getSize()).findFirst().orElse(null);
+        return this.islands.stream().filter(island -> this.playerIslandDistance(location, island.getCenterLocation()) < island.getIslandSize().getSize()).findFirst().orElse(null);
     }
     public List<Player> getPlayersOnIsland(Island island){
-        return Bukkit.getOnlinePlayers().stream().filter(player -> player.getLocation().distance(island.getCenterLocation()) < island.getIslandSize().getSize()).collect(Collectors.toList());
+        return Bukkit.getOnlinePlayers().stream().filter(player -> this.playerIslandDistance(player.getLocation(), island.getCenterLocation()) < island.getIslandSize().getSize()).collect(Collectors.toList());
+    }
+    public double playerIslandDistance(Location playerLocation, Location islandLocation){
+        Vector2d playerVec = new Vector2d(playerLocation.getX(), playerLocation.getZ());
+        Vector2d islandVec = new Vector2d(islandLocation.getX(), islandLocation.getZ());
+        return playerVec.distance(islandVec);
     }
 
     private void loadIslands() {
-        CompletableFuture.runAsync(() -> {
-            int islands = 0;
-            try {
-                PreparedStatement statement = PlunaIsland.getInstance().getMysql().getConnection().prepareStatement("select * from islands");
-                statement.execute();
-                statement.closeOnCompletion();
-                ResultSet set = statement.getResultSet();
-                while (set.next()) {
-                    islands++;
+        int islands = 0;
+        try {
+            PreparedStatement statement = PlunaIsland.getInstance().getMysql().getConnection().prepareStatement("select * from islands");
+            statement.execute();
+            statement.closeOnCompletion();
+            ResultSet set = statement.getResultSet();
+            while (set.next()) {
+                islands++;
 
-                    int id = set.getInt("IslandID");
+                int id = set.getInt("IslandID");
 
-                    if(id > this.lastIslandID){
-                        this.lastIslandID = id;
-                    }
-
-                    int streams = set.getInt("Streams");
-                    Location spawn = Serialers.locFromString(set.getString("IslandSpawn"));
-                    Location centerLocation = Serialers.locFromString(set.getString("IslandCenter"));
-                    OfflinePlayer owner = Bukkit.getOfflinePlayer(UUID.fromString(set.getString("Owner")));
-                    OfflinePlayer creator = Bukkit.getOfflinePlayer(UUID.fromString(set.getString("Creator")));
-                    List<OfflinePlayer> trustedPlayers = Serialers.StringtoList(set.getString("TrustedPlayers"));
-                    List<OfflinePlayer> bannedPlayers = Serialers.StringtoList(set.getString("IslandBans"));
-                    int level = set.getInt("IslandLevel");
-                    int exp = set.getInt("IslandExp");
-
-                    if(trustedPlayers == null){
-                        trustedPlayers = new ArrayList<>();
-                    }
-                    if(bannedPlayers == null){
-                        bannedPlayers = new ArrayList<>();
-                    }
-
-                    Island island = new Island(id, spawn, centerLocation, owner, creator, streams, trustedPlayers, bannedPlayers, level, exp);
-                    this.islands.add(island);
-
-                    int mobDropLevel = set.getInt("IslandMobDropLevel");
-                    int erzDropLevel = set.getInt("IslandErzDropLevel");
-                    int xpDropLevel = set.getInt("IslandXpDropLevel");
-                    int farmingDropLevel = set.getInt("IslandFarmingDropLevel");
-
-                    island.setMobDropLevel(mobDropLevel);
-                    island.setErzDropLevel(erzDropLevel);
-                    island.setXpDropLevel(xpDropLevel);
-                    island.setFarmingDropLevel(farmingDropLevel);
+                if(id > this.lastIslandID){
+                    this.lastIslandID = id;
                 }
-                Bukkit.getLogger().info("Loaded " + islands + " islands from database!");
-            } catch (SQLException e) {
-                e.printStackTrace();
+
+                int streams = set.getInt("Streams");
+                Location spawn = Serialers.locFromString(set.getString("IslandSpawn"));
+                Location centerLocation = Serialers.locFromString(set.getString("IslandCenter"));
+                OfflinePlayer owner = Bukkit.getOfflinePlayer(UUID.fromString(set.getString("Owner")));
+                OfflinePlayer creator = Bukkit.getOfflinePlayer(UUID.fromString(set.getString("Creator")));
+                List<OfflinePlayer> trustedPlayers = Serialers.StringtoList(set.getString("TrustedPlayers"));
+                List<OfflinePlayer> bannedPlayers = Serialers.StringtoList(set.getString("IslandBans"));
+                int level = set.getInt("IslandLevel");
+                int exp = set.getInt("IslandExp");
+
+                if(trustedPlayers == null){
+                    trustedPlayers = new ArrayList<>();
+                }
+                if(bannedPlayers == null){
+                    bannedPlayers = new ArrayList<>();
+                }
+
+                Island island = new Island(id, spawn, centerLocation, owner, creator, streams, trustedPlayers, bannedPlayers, level, exp);
+                this.islands.add(island);
+
+                int mobDropLevel = set.getInt("IslandMobDropLevel");
+                int erzDropLevel = set.getInt("IslandErzDropLevel");
+                int xpDropLevel = set.getInt("IslandXpDropLevel");
+                int farmingDropLevel = set.getInt("IslandFarmingDropLevel");
+
+                island.setMobDropLevel(mobDropLevel);
+                island.setErzDropLevel(erzDropLevel);
+                island.setXpDropLevel(xpDropLevel);
+                island.setFarmingDropLevel(farmingDropLevel);
             }
-        });
+            Bukkit.getLogger().info("Loaded " + islands + " islands from database!");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

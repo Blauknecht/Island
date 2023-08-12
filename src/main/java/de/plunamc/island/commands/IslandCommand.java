@@ -67,6 +67,7 @@ public class IslandCommand implements CommandExecutor, TabCompleter {
                         return false;
                     }
                     island.getTrustedPlayers().forEach(offlinePlayer -> {
+                        if(island.getTrustedPlayers().isEmpty()) return;
                         if(offlinePlayer.getPlayer() != null){
                             offlinePlayer.getPlayer().setWorldBorder(null);
                             offlinePlayer.getPlayer().sendMessage(PlunaIsland.getInstance().getPrefix()+"Der Inselbesitzer §b"+island.getOwner().getName()+" §7hat seine Insel §cgelöscht§7.");
@@ -74,6 +75,7 @@ public class IslandCommand implements CommandExecutor, TabCompleter {
                         }
                         island.getTrustedPlayers().remove(offlinePlayer);
                     });
+                    player.setWorldBorder(null);
                     PlunaIsland.getInstance().getIslandManager().deleteIsland(island);
                     player.teleport(PlunaIsland.getInstance().getIslandManager().getSpawn());
                     player.sendMessage(PlunaIsland.getInstance().getPrefix()+"Du hast deine Insel erfolgreich gelöscht.");
@@ -197,7 +199,7 @@ public class IslandCommand implements CommandExecutor, TabCompleter {
                         player.sendMessage(PlunaIsland.getInstance().getPrefix() + "Du bist nicht der Insel Owner.");
                         return false;
                     }
-                    if (island.getTrustedPlayers().contains(target.getUniqueId())) {
+                    if (island.isTrustedPlayer(target.getUniqueId())) {
                         player.sendMessage(PlunaIsland.getInstance().getPrefix() + "Dieser Spieler ist schon auf deiner Insel.");
                         return false;
                     }

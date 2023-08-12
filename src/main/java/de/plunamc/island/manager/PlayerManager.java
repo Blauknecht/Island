@@ -40,12 +40,8 @@ public class PlayerManager {
         }
         return null;
     }
-    public void setPlayerData(PlayerData data){
-        this.playerDataMap.put(data.getPlayer(), data);
-    }
 
-
-    public void setSpawnScoreboard(Player player, Island island){
+    public void setSpawnScoreboard(Player player){
         Rank rank = PlunaIsland.getInstance().getRankAPI().getPlayerRank(player);
         PlayerScore playerScore = PlayerScore.getScores().get(player);
         playerScore.createSidebar("§bᴘʟᴜɴᴀᴍᴄ.ᴅᴇ");

@@ -18,6 +18,9 @@ public class PlayerJoinListener implements Listener {
         Player player = event.getPlayer();
         event.setJoinMessage(PlunaIsland.getInstance().getPrefix()+"§a» §7" + player.getName());
         PlunaIsland.getInstance().getPlayerManager().addPlayerData(player);
+        if(player.getWorld().getName().equals("spawn")){
+            player.teleport(PlunaIsland.getInstance().getIslandManager().getSpawn());
+        }
         List<Island> islands = PlunaIsland.getInstance().getIslandManager().getInvitedIslands(player);
         if(!islands.isEmpty()) {
             StringBuilder builder = new StringBuilder();
@@ -40,6 +43,7 @@ public class PlayerJoinListener implements Listener {
                 public void run() {
                     if(!player.hasPlayedBefore()) {
                         player.teleport(PlunaIsland.getInstance().getIslandManager().getSpawn());
+                        PlunaIsland.getInstance().getPlayerManager().getPlayerData(player).addMoney(20000);
                     }
                     Island island = PlunaIsland.getInstance().getIslandManager().getIslandAtLocation(player.getLocation());
                     if(island != null){

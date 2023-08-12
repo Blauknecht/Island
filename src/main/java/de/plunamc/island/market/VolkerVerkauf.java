@@ -126,8 +126,6 @@ public enum VolkerVerkauf {
     @Getter
     private int sellprice;
 
-
-
     VolkerVerkauf(Material material, Integer sellprice ) {
         this.material = material;
         this.sellprice = sellprice;

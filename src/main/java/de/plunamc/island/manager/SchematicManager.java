@@ -28,13 +28,13 @@ public class SchematicManager {
         }
     }
 
-    public void load(String name, double x, double y, double z){
+    public void load(String name, double x, double y, double z, String worldName){
         try {
             File file = new File(PlunaIsland.getInstance().getDataFolder() + "/schematics/"+name+".schem");
             ClipboardFormat format = ClipboardFormats.findByFile(file);
             ClipboardReader reader = format.getReader(Files.newInputStream(file.toPath()));
             Clipboard clipboard = reader.read();
-            try(EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(BukkitAdapter.adapt(Bukkit.getWorld("islands")), -1)){
+            try(EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(BukkitAdapter.adapt(Bukkit.getWorld(worldName)), -1)){
                 Operation operation = new ClipboardHolder(clipboard)
                         .createPaste(editSession)
                         .to(BlockVector3.at(x, y, z))
