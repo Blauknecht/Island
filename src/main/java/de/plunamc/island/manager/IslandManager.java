@@ -31,7 +31,7 @@ public class IslandManager {
         this.islands = new ArrayList<>();
         this.createWorld();
         this.loadIslands();
-        spawn = new Location(Bukkit.getWorld("islands"), 0, 102, 0, 0, 0);
+        spawn = new Location(Bukkit.getWorld("spawn"), 0.5, 100, 0.5, 0, 0);
     }
 
     public void createIsland(Player player) {
@@ -105,8 +105,8 @@ public class IslandManager {
     }
 
     private void createWorld() {
-        if (Bukkit.getWorld("islands") == null) {
-            WorldCreator worldCreator = new WorldCreator("islands");
+        if (Bukkit.getWorld("spawn") == null) {
+            WorldCreator worldCreator = new WorldCreator("spawn");
             worldCreator.type(WorldType.FLAT);
             worldCreator.generateStructures(false);
             worldCreator.generator(new VoidGenerator());

@@ -68,13 +68,13 @@ public class IslandCommand implements CommandExecutor, TabCompleter {
                     }
                     island.getTrustedPlayers().forEach(offlinePlayer -> {
                         if(offlinePlayer.getPlayer() != null){
+                            offlinePlayer.getPlayer().setWorldBorder(null);
                             offlinePlayer.getPlayer().sendMessage(PlunaIsland.getInstance().getPrefix()+"Der Inselbesitzer §b"+island.getOwner().getName()+" §7hat seine Insel §cgelöscht§7.");
                             offlinePlayer.getPlayer().teleport(PlunaIsland.getInstance().getIslandManager().getSpawn());
                         }
                         island.getTrustedPlayers().remove(offlinePlayer);
                     });
                     PlunaIsland.getInstance().getIslandManager().deleteIsland(island);
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "kill @e[type=!minecraft:player, distance=135]");
                     player.teleport(PlunaIsland.getInstance().getIslandManager().getSpawn());
                     player.sendMessage(PlunaIsland.getInstance().getPrefix()+"Du hast deine Insel erfolgreich gelöscht.");
                     return true;
@@ -130,7 +130,7 @@ public class IslandCommand implements CommandExecutor, TabCompleter {
                     } else {
                         player.sendMessage(PlunaIsland.getInstance().getPrefix() + "Gebannte Spieler: §b-");
                     }
-                    player.sendMessage("§8>>§8§m-----------------------------------------------§r§8<<");
+                    player.sendMessage("§8§8§m-----------------------------------------------§r§8");
                     return true;
                 }
                 if (args[0].equalsIgnoreCase("setspawn")) {
@@ -249,6 +249,10 @@ public class IslandCommand implements CommandExecutor, TabCompleter {
                         player.sendMessage(PlunaIsland.getInstance().getPrefix() + "Dieser Spieler ist nicht auf deiner Insel.");
                         return false;
                     }
+                    if(target.getName() == player.getName()){
+                        player.sendMessage(PlunaIsland.getInstance().getPrefix()+"Du kannst dich nicht selber von der Insel bannen.");
+                        return false;
+                    }
                     target.getPlayer().sendMessage(PlunaIsland.getInstance().getPrefix()+"Du wurdest von der Insel von §b"+island.getOwner().getName()+" §7gebannt.");
                     player.sendMessage(PlunaIsland.getInstance().getPrefix()+"Du hast den Spieler §b"+target.getName()+" §7von der Insel gebannt.");
                     island.getBanPlayers().add(target);
@@ -267,6 +271,10 @@ public class IslandCommand implements CommandExecutor, TabCompleter {
                     }
                     if(!island.getBanPlayers().contains(target)){
                         player.sendMessage(PlunaIsland.getInstance().getPrefix() + "Dieser Spieler ist nicht gebannt.");
+                        return false;
+                    }
+                    if(target.getName() == player.getName()){
+                        player.sendMessage(PlunaIsland.getInstance().getPrefix()+"Du kannst dich nicht selber von der Insel entbannen.");
                         return false;
                     }
                     player.sendMessage(PlunaIsland.getInstance().getPrefix()+"Du hast den Spieler §b"+target.getName()+" §7von der Insel entbannt.");

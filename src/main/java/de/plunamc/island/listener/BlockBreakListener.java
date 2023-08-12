@@ -1,6 +1,8 @@
 package de.plunamc.island.listener;
 
+import de.plunaapi.scoreboard.PlayerScore;
 import de.plunamc.island.PlunaIsland;
+import de.plunamc.island.files.BlockFile;
 import de.plunamc.packets.data.Rank;
 import de.plunamc.island.island.Island;
 import org.bukkit.Location;
@@ -15,6 +17,8 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockFormEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Map;
+
 public class BlockBreakListener implements Listener {
 
     private static final BlockFace[] FACES = new BlockFace[]{BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST, BlockFace.UP, BlockFace.DOWN};
@@ -25,24 +29,34 @@ public class BlockBreakListener implements Listener {
     public void on(BlockBreakEvent event) {
         Player player = event.getPlayer();
         Location blockloc = event.getBlock().getLocation();
-        Rank rank = PlunaIsland.getInstance().getRankAPI().getPlayerRank(player);
-        Island island = PlunaIsland.getInstance().getIslandManager().getIslandAtLocation(event.getBlock().getLocation());
-        if (rank.isLowerLevel(Rank.DEVELOPER)) {
-            if (island != null) {
-                if (!island.isOnIsland(player)) {
-                    event.setCancelled(true);
-                }
-                ItemStack tool = event.getPlayer().getInventory().getItemInMainHand();
-                if (tool.getType().toString().contains("PICKAXE")) {
-                    if (tool.getEnchantments().containsKey(Enchantment.SILK_TOUCH)) {
-                        if (event.getBlock().getType() == Material.SPAWNER) {
-                            event.getPlayer().getWorld().dropItemNaturally(event.getBlock().getLocation(), new ItemStack(Material.SPAWNER));
-                        }
+        Island island = PlunaIsland.getInstance().getIslandManager().getIslandAtLocation(blockloc);
+        if(player.getWorld().getName().equals("spawn")){
+            if(PlunaIsland.getInstance().getBuild().contains(player)){
+                event.setCancelled(false);
+            }else{
+                event.setCancelled(true);
+            }
+        }
+        if (island != null) {
+            if (!island.isOnIsland(player)) {
+                if(PlunaIsland.getInstance().getBuild().contains(player))return;
+                event.setCancelled(true);
+            }
+            ItemStack tool = event.getPlayer().getInventory().getItemInMainHand();
+            if (tool.getType().toString().contains("PICKAXE")) {
+                if (tool.getEnchantments().containsKey(Enchantment.SILK_TOUCH)) {
+                    if (event.getBlock().getType() == Material.SPAWNER) {
+                        event.getPlayer().getWorld().dropItemNaturally(event.getBlock().getLocation(), new ItemStack(Material.SPAWNER));
                     }
                 }
-            } else {
-                if (player.getWorld().getName().equals("islands")) {
-                    event.setCancelled(true);
+            }
+            for (Map.Entry<Material, Integer> entry : BlockFile.blockExpMap.entrySet()) {
+                Material material = entry.getKey();
+                int points = entry.getValue();
+                if (event.getBlock().getType() == material) {
+                    PlunaIsland.getInstance().getIslandManager().getIsland(player.getUniqueId()).removeExp(points);
+                    PlayerScore playerScore = PlayerScore.getScores().get(player);
+                    playerScore.setScore("§7➥ §f" + island.getLevel().toString() + "§7/§b" + island.getExp().toString() + "ᴇxᴘ", 3);
                 }
             }
         }

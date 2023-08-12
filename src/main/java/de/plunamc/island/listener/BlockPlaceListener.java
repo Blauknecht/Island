@@ -1,30 +1,50 @@
 package de.plunamc.island.listener;
 
+import de.plunaapi.scoreboard.PlayerScore;
 import de.plunamc.island.PlunaIsland;
+import de.plunamc.island.files.BlockFile;
 import de.plunamc.packets.data.Rank;
 import de.plunamc.island.island.Island;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 
+import java.util.Map;
+
 public class BlockPlaceListener implements Listener {
 
     @EventHandler
-    public void on(BlockPlaceEvent event){
+    public void on(BlockPlaceEvent event) {
         Player player = event.getPlayer();
         Rank rank = PlunaIsland.getInstance().getRankAPI().getPlayerRank(player);
         Island island = PlunaIsland.getInstance().getIslandManager().getIslandAtLocation(event.getBlock().getLocation());
-        if(rank.isLowerLevel(Rank.DEVELOPER)){
-            if(island != null){
-                if(!island.isOnIsland(player)){
-                    event.setCancelled(true);
-                }
-
+        if(player.getWorld().getName().equals("spawn")){
+            if(PlunaIsland.getInstance().getBuild().contains(player)){
+                event.setCancelled(false);
             }else{
-                if(player.getWorld().getName().equals("islands")){
-                    event.setCancelled(true);
+                event.setCancelled(true);
+            }
+        }
+        if(island != null){
+            if(!island.isOnIsland(player)){
+                if(PlunaIsland.getInstance().getBuild().contains(player))return;
+                event.setCancelled(true);
+            }
+            for(Map.Entry<Material, Integer> entry : BlockFile.blockExpMap.entrySet()){
+                Material material = entry.getKey();
+                int points = entry.getValue();
+                if(event.getBlock().getType() == material){
+                    PlunaIsland.getInstance().getIslandManager().getIsland(player.getUniqueId()).addExp(points);
+                    PlayerScore playerScore = PlayerScore.getScores().get(player);
+                    playerScore.setScore("§7➥ §f"+ island.getLevel().toString()+"§7/§b"+island.getExp().toString()+"ᴇxᴘ", 3);
                 }
+            }
+        }else{
+            if(player.getWorld().getName().equals("islands")){
+                if (PlunaIsland.getInstance().getBuild().contains(player)) return;
+                event.setCancelled(true);
             }
         }
     }

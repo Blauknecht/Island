@@ -24,12 +24,11 @@ public class PlayerInteractListener implements Listener {
         Player player = event.getPlayer();
         Rank rank = PlunaIsland.getInstance().getRankAPI().getPlayerRank(player);
         Island island = PlunaIsland.getInstance().getIslandManager().getIslandAtLocation(player.getLocation());
+        if (PlunaIsland.getInstance().getBuild().contains(player)) return;
         if (island != null) {
-            if (!rank.isHigherEqualsLevel(Rank.DEVELOPER)) {
                 if (!island.isOnIsland(player)) {
                     event.setCancelled(true);
                     return;
-                }
             }
         }
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK && event.getClickedBlock().getType() == Material.NOTE_BLOCK) {
@@ -57,6 +56,13 @@ public class PlayerInteractListener implements Listener {
                 noteBlock.setNote(customBlock.getNote());
                 blocklock.setBlockData(noteBlock);
                 player.setCooldown(Material.PRISMARINE_SHARD, 5);
+            }
+        }
+        if(player.getWorld().getName().equals("spawn")){
+            if(PlunaIsland.getInstance().getBuild().contains(player)){
+                event.setCancelled(false);
+            }else{
+                event.setCancelled(true);
             }
         }
     }

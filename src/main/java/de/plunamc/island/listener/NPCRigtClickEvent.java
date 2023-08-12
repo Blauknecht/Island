@@ -3,6 +3,7 @@ package de.plunamc.island.listener;
 import de.plunamc.island.PlunaIsland;
 import de.plunamc.island.manager.PlayerData;
 import net.citizensnpcs.api.event.NPCRightClickEvent;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -32,6 +33,6 @@ public class NPCRigtClickEvent implements Listener {
         if (event.getNPC().getId() == 4) {
             player.openInventory(PlunaIsland.getInstance().getPlayerManager().getPlayerData(player).getVolkerverkauf());
         }
-
+        player.playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, 1, 1);
     }
 }

@@ -1,14 +1,11 @@
 package de.plunamc.island.manager;
 
-import de.plunaapi.PlunaAPI;
 import de.plunaapi.scoreboard.PlayerScore;
 import de.plunamc.island.PlunaIsland;
 import de.plunamc.island.utils.Formatter;
-import de.plunamc.island.utils.Serialers;
 import de.plunamc.packets.data.Rank;
 import de.plunamc.island.island.Island;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
@@ -31,7 +28,6 @@ public class PlayerManager {
         if(!this.playerDataMap.containsKey(player)){
             this.playerDataMap.put(player, new PlayerData(player));
         }
-
     }
     public void removePlayerData(Player player){
         if(this.playerDataMap.containsKey(player)){
@@ -57,8 +53,8 @@ public class PlayerManager {
         playerScore.setScore("§bʀᴀɴɢ", 7);
         playerScore.setScore("§7➥ "+rank.getUnicode(), 6);
         playerScore.setScore("§6", 5);
-        playerScore.setScore("§fʙɪᴛꜱ", 4);
-        playerScore.setScore("§7➥ §f"+ island.getStreams(), 3);
+        playerScore.setScore("§bʙɪᴛꜱ", 4);
+        playerScore.setScore("§7➥ §f"+ this.getPlayerData(player).getMoney() +" §f\uE041", 3);
         playerScore.setScore("§a", 2);
         playerScore.setScore("§bᴅɪꜱᴄᴏʀᴅ", 1);
         playerScore.setScore("§7➥ §fᴅᴄ.ᴘʟᴜɴᴀᴍᴄ.ᴅᴇ", 0);
@@ -77,29 +73,4 @@ public class PlayerManager {
         playerScore.setScore("§bᴅɪꜱᴄᴏʀᴅ", 1);
         playerScore.setScore("§7➥ §fᴅᴄ.ᴘʟᴜɴᴀᴍᴄ.ᴅᴇ", 0);
     }
-
-    private void loadMoney() {
-        CompletableFuture.runAsync(() -> {
-            int moneys = 0;
-            try {
-                PreparedStatement statement = PlunaIsland.getInstance().getMysql().getConnection().prepareStatement("select * from islandsMoney");
-                statement.execute();
-                statement.closeOnCompletion();
-                ResultSet set = statement.getResultSet();
-                while (set.next()) {
-
-                    OfflinePlayer owner = Bukkit.getOfflinePlayer(UUID.fromString(set.getString("Owner")));
-                    int money = set.getInt("Money");
-
-                   // PlayerData playerData = new PlayerData(owner.getName()).getMoney();
-
-
-                }
-                Bukkit.getLogger().info("Loaded " + moneys + " islands from database!");
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        });
-    }
-
 }

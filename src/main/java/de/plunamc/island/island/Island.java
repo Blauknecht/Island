@@ -83,7 +83,7 @@ public class Island {
         this.streams = streams;
 
         this.level = level;
-        this.exp = exp;
+        this.exp = 0;
         this.mobDropLevel = 1;
         this.erzDropLevel = 1;
         this.xpDropLevel = 1;
@@ -101,6 +101,30 @@ public class Island {
         this.border.setSize(this.islandSize.getSize());
         this.border.setDamageAmount(0);
         this.border.setWarningDistance(3);
+    }
+
+    public Integer getExp() {
+        return exp;
+    }
+
+    public void setExp(Integer exp) {
+        this.exp = exp;
+    }
+
+    public void addExp(Integer exp) {
+        this.exp += exp;
+    }
+    public void removeExp(Integer exp) {
+        this.exp -= exp;
+    }
+
+    public boolean isTrustedPlayer(UUID uuid){
+        for (OfflinePlayer player : this.getTrustedPlayers()) {
+            if(player.getUniqueId().equals(uuid)){
+                return true;
+            }
+        }
+        return false;
     }
 
     public void updateBorder() {
