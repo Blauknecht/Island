@@ -12,3 +12,5 @@ commands:
   updateborder:
   bits:
   build:
+  warp:
+  warps:

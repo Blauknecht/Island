@@ -8,10 +8,15 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public class BitCommand implements CommandExecutor {
+import java.util.ArrayList;
+import java.util.List;
+
+public class BitCommand implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String s, @NotNull String[] args) {
         if (sender instanceof Player player) {
@@ -26,6 +31,7 @@ public class BitCommand implements CommandExecutor {
                         if (!isNumeric(args[2])) return true;
                         if (args[0].equalsIgnoreCase("set")) {
                             PlunaIsland.getInstance().getPlayerManager().getPlayerData(player).setMoney(Integer.parseInt(args[2]));
+                            PlunaIsland.getInstance().getPlayerManager().getPlayerData(player).saveMoney();
                             player.sendMessage(PlunaIsland.getInstance().getPrefix() + "Du hast den Spieler §b" + target.getName() + "§7 auf §b" + args[2] + "§7 Bits gesetzt.");
                         } else if (args[0].equalsIgnoreCase("remove")) {
                             PlunaIsland.getInstance().getPlayerManager().getPlayerData(player).removeMoney(Integer.parseInt(args[2]));
@@ -42,7 +48,7 @@ public class BitCommand implements CommandExecutor {
                 } else if (args.length == 2) {
                     Player target = Bukkit.getPlayer(args[0]);
                     if (target != null) {
-                        player.sendMessage(PlunaIsland.getInstance().getPrefix() + "Der Spieler §b" + target.getName() + " §7hat §b" +  PlunaIsland.getInstance().getPlayerManager().getPlayerData(target).getMoney() + "§7 Bits.");
+                        player.sendMessage(PlunaIsland.getInstance().getPrefix() + "Der Spieler §b" + target.getName() + " §7hat §b" + PlunaIsland.getInstance().getPlayerManager().getPlayerData(target).getMoney() + "§7 Bits.");
                     } else {
                         player.sendMessage(PlunaIsland.getInstance().getPrefix() + "Der Spieler ist nicht online.");
                     }
@@ -63,5 +69,37 @@ public class BitCommand implements CommandExecutor {
         } catch (NumberFormatException e) {
             return false;
         }
+    }
+
+    @Nullable
+    @Override
+    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
+        if (sender instanceof Player player) {
+            if (PlunaIsland.getInstance().getRankAPI().getPlayerRank(player).isHigherEqualsLevel(Rank.DEVELOPER)) {
+                List<String> tabs = new ArrayList<>();
+                if (args.length == 1) {
+                    List<String> match = new ArrayList<>();
+                    match.add("add");
+                    match.add("remove");
+                    match.add("set");
+                    String name = args[0].isEmpty() ? "" : args[0];
+                    match.forEach(matchs -> {
+                        if (matchs.contains(name)) {
+                            tabs.add(matchs);
+                        }
+                    });
+                }
+                if (args.length == 2) {
+                    String name = args[1].isEmpty() ? "" : args[1];
+                    Bukkit.getOnlinePlayers().forEach(players -> {
+                        if (players.getName().contains(name)) {
+                            tabs.add(players.getName());
+                        }
+                    });
+                }
+                return tabs;
+            }
+        }
+        return null;
     }
 }

@@ -14,6 +14,7 @@ public class SpawnCommand implements CommandExecutor {
         if(sender instanceof Player){
             Player player = ((Player) sender).getPlayer();
             if(args.length == 0){
+                PlunaIsland.getInstance().getIslandManager().getIsland(player.getUniqueId()).deleteBossbar(player);
                 player.sendMessage(PlunaIsland.getInstance().getPrefix()+"Du wurdest zum Spawn teleportiert.");
                 player.teleport(PlunaIsland.getInstance().getIslandManager().getSpawn());
                 player.setWorldBorder(null);

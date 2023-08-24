@@ -20,6 +20,22 @@ public class Itemmanager {
         return it;
     }
 
+    public static ItemStack createItemWithLore(Material mat, int amount, String name, List<String> lore){
+        ItemStack it = new ItemStack(mat,amount);
+        ItemMeta meta = it.getItemMeta();
+        meta.setDisplayName(name);
+        meta.setLore(lore);
+        it.setItemMeta(meta);
+        return it;
+    }
+    public static ItemStack createSpawnerItem(Material mat, int amount){
+        ItemStack it = new ItemStack(mat,amount);
+        ItemMeta meta = it.getItemMeta();
+        it.setItemMeta(meta);
+        return it;
+    }
+
+
     public static ItemStack createMarketItemWithLore(Material mat, List<String> lore){
         ItemStack it = new ItemStack(mat,1);
         ItemMeta meta = it.getItemMeta();

@@ -2,6 +2,7 @@ package de.plunamc.island.manager;
 
 import de.plunaapi.scoreboard.PlayerScore;
 import de.plunamc.island.PlunaIsland;
+import de.plunamc.island.spawner.Spawner;
 import de.plunamc.island.utils.Formatter;
 import de.plunamc.packets.data.Rank;
 import de.plunamc.island.island.Island;
@@ -63,8 +64,8 @@ public class PlayerManager {
         playerScore.setScore("§bɪɴꜱᴇʟ", 7);
         playerScore.setScore("§7➥ §f"+ Formatter.smallCapsFormatter(island.getOwner().getName()), 6);
         playerScore.setScore("§6", 5);
-        playerScore.setScore("§bʟᴇᴠᴇʟ§7/§bᴇxᴘ", 4);
-        playerScore.setScore("§7➥ §f"+ island.getLevel().toString()+"§7/§f"+island.getExp().toString()+" ᴇxᴘ", 3);
+        playerScore.setScore("§bʟᴇᴠᴇʟ§7", 4);
+        playerScore.setScore("§7➥ §f"+ island.getLevel().toString(), 3);
         playerScore.setScore("§9", 2);
         playerScore.setScore("§bᴅɪꜱᴄᴏʀᴅ", 1);
         playerScore.setScore("§7➥ §fᴅᴄ.ᴘʟᴜɴᴀᴍᴄ.ᴅᴇ", 0);

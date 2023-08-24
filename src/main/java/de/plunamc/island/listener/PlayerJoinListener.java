@@ -18,8 +18,11 @@ public class PlayerJoinListener implements Listener {
         Player player = event.getPlayer();
         event.setJoinMessage(PlunaIsland.getInstance().getPrefix()+"§a» §7" + player.getName());
         PlunaIsland.getInstance().getPlayerManager().addPlayerData(player);
-        if(player.getWorld().getName().equals("spawn")){
-            player.teleport(PlunaIsland.getInstance().getIslandManager().getSpawn());
+        Island islandspawn = PlunaIsland.getInstance().getIslandManager().getIslandAtLocation(player.getLocation());
+        if(islandspawn != null){
+            if(islandspawn.getOwner().getUniqueId().equals(player.getUniqueId())){
+                islandspawn.addPlayerToBossbar(player);
+            }
         }
         List<Island> islands = PlunaIsland.getInstance().getIslandManager().getInvitedIslands(player);
         if(!islands.isEmpty()) {
@@ -34,6 +37,7 @@ public class PlayerJoinListener implements Listener {
                 ++i;
             }
             player.sendMessage(PlunaIsland.getInstance().getPrefix() + "Du wurdest auf die Insel eingeladen von: \n" + builder.toString());
+            player.sendMessage(PlunaIsland.getInstance().getPrefix()+"Nehme die Anfrage mit §b/is accept §7an, oder lehne sie mit §b/is deny §7ab.");
         }
 
         player.setMetadata("island", new FixedMetadataValue(PlunaIsland.getInstance(), null));

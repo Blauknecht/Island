@@ -53,6 +53,7 @@ public class IslandManager {
             player.teleport(spawn);
             player.sendMessage(PlunaIsland.getInstance().getPrefix() + "Du wurdest zu deiner Insel teleportiert!");
             player.setWorldBorder(island.getBorder());
+            island.addPlayerToBossbar(player);
 
             island.save(true);
         }
@@ -186,11 +187,13 @@ public class IslandManager {
                 int erzDropLevel = set.getInt("IslandErzDropLevel");
                 int xpDropLevel = set.getInt("IslandXpDropLevel");
                 int farmingDropLevel = set.getInt("IslandFarmingDropLevel");
-
+                int expblock = set.getInt("ExpBlocks");
                 island.setMobDropLevel(mobDropLevel);
                 island.setErzDropLevel(erzDropLevel);
                 island.setXpDropLevel(xpDropLevel);
                 island.setFarmingDropLevel(farmingDropLevel);
+                island.setExpblocks(expblock);
+
             }
             Bukkit.getLogger().info("Loaded " + islands + " islands from database!");
         } catch (SQLException e) {

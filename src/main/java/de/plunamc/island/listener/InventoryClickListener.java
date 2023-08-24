@@ -7,6 +7,7 @@ import de.plunamc.island.island.Island;
 import de.plunamc.island.market.*;
 import de.plunamc.island.utils.Formatter;
 import de.plunamc.island.utils.Itemmanager;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -35,6 +36,13 @@ public class InventoryClickListener implements Listener {
         if (event.getClickedInventory() == null) return;
         if (event.getCurrentItem() == null) return;
         ItemStack clickeditem = event.getCurrentItem();
+
+        //Warp Inventar
+        if (event.getView().getTitle().equals(PlunaIsland.getInstance().getInventoryTitle() + "\uE054")) {
+            String name = event.getCurrentItem().getItemMeta().getDisplayName();
+            Bukkit.dispatchCommand(player, "warp teleport "+name);
+            player.playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 1, 1);
+        }
         //Volker Verkauf
         if (event.getView().getTitle().equals(PlunaIsland.getInstance().getInventoryTitle() + "\uE048")) {
             Inventory inventory = event.getView().getTopInventory();
@@ -68,6 +76,7 @@ public class InventoryClickListener implements Listener {
                         lore.add(" ");
                         int all = 0;
                         for (ItemStack itemStack : inventory.getContents()) {
+                            if(itemStack == null) continue;
                             if(VolkerVerkauf.isMaterialInList(itemStack.getType())){
                                 lore.add(itemStack.getItemMeta().getDisplayName() + " §8- §b"+itemStack.getAmount() * VolkerVerkauf.getMaterialPrice(itemStack.getType()) + " §f\uE041");
                                 all += itemStack.getAmount() * VolkerVerkauf.getMaterialPrice(itemStack.getType());

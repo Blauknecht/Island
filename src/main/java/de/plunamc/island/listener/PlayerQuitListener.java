@@ -11,6 +11,7 @@ public class PlayerQuitListener implements Listener {
     @EventHandler
     public void on(PlayerQuitEvent event){
         Player player = event.getPlayer();
+        PlunaIsland.getInstance().getIslandManager().getIsland(player.getUniqueId()).save(false);
         PlunaIsland.getInstance().getPlayerManager().removePlayerData(player);
         event.setQuitMessage(PlunaIsland.getInstance().getPrefix()+"§c« §7" + event.getPlayer().getName());
     }

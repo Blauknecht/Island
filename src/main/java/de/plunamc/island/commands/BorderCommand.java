@@ -257,9 +257,9 @@ public class BorderCommand implements CommandExecutor, TabCompleter {
                                 island.setIslandSize(IslandSize.SECHSUNDZWANZIG);
                                 island.updateBorder();
                             }
-                            island.setLevel(Integer.valueOf(args[0] +1));
+                            island.setLevel(Integer.parseInt(args[0]) +1);
                             PlayerScore playerScore = PlayerScore.getScores().get(player);
-                            playerScore.setScore("§7➥ §f"+ island.getLevel().toString()+"§7/§b"+island.getExp().toString()+"ᴇxᴘ", 3);
+                            playerScore.setScore("§7➥ §f"+ island.getLevel().toString(), 3);
                             player.sendMessage(PlunaIsland.getInstance().getPrefix() + "Insel wurde auf §b" + island.getIslandSize().getName() + " §7(§b" + island.getIslandSize().getSize() + "§7) gesetzt.");
 
                         }

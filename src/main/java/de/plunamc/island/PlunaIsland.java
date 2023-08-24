@@ -5,18 +5,17 @@ import de.plunaapi.playerdata.RankAPI;
 import de.plunamc.island.commands.*;
 import de.plunamc.island.files.BlockFile;
 import de.plunamc.island.listener.*;
-import de.plunamc.island.manager.IslandManager;
-import de.plunamc.island.manager.PlayerData;
-import de.plunamc.island.manager.PlayerManager;
-import de.plunamc.island.manager.SchematicManager;
+import de.plunamc.island.manager.*;
+import de.plunamc.island.spawner.CustomBlock;
+import de.plunamc.island.spawner.Spawner;
+import de.plunamc.island.utils.Itemmanager;
 import de.plunamc.island.utils.MySQL;
 import de.plunamc.island.utils.ScoreboardUpdater;
 import lombok.Getter;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.Bukkit;
-import org.bukkit.GameRule;
-import org.bukkit.World;
+import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
@@ -38,6 +37,9 @@ public class PlunaIsland extends JavaPlugin {
     private MySQL mysql;
 
     @Getter
+    private int spawnerScheduler;
+
+    @Getter
     private ArrayList<Player> build;
 
     @Getter
@@ -45,6 +47,12 @@ public class PlunaIsland extends JavaPlugin {
 
     @Getter
     private IslandManager islandManager;
+
+    @Getter
+    private SpawnerManager spawnerManager;
+
+    @Getter
+    private WarpManager warpManager;
 
     @Getter
     private PlayerManager playerManager;
@@ -61,6 +69,8 @@ public class PlunaIsland extends JavaPlugin {
 
         getCommand("is").setExecutor(new IslandCommand(this));
         getCommand("bits").setExecutor(new BitCommand());
+        getCommand("warp").setExecutor(new WarpCommand());
+        getCommand("warps").setExecutor(new WarpCommand());
         getCommand("build").setExecutor(new BuildCommand());
         getCommand("spawn").setExecutor(new SpawnCommand());
         getCommand("warzone").setExecutor(new WarzoneCommand());
@@ -68,15 +78,17 @@ public class PlunaIsland extends JavaPlugin {
 
         this.mysql = new MySQL("212.227.225.63", "root", "nwTrgv7yTaQ7Vgf2!", "skyblock");
         this.mysql.connect();
-        this.mysql.update("CREATE TABLE IF NOT EXISTS `islands` ( `IslandID` INT NOT NULL , `Owner` VARCHAR(100) NOT NULL ,`Creator` VARCHAR(100) NOT NULL , `Created` BIGINT NOT NULL ,`Streams` BIGINT NOT NULL , `Server` VARCHAR(100) NOT NULL , `IslandCenter` VARCHAR(100) NOT NULL , `IslandSpawn` VARCHAR(100) NOT NULL , `TrustedPlayers` LONGTEXT NULL DEFAULT NULL , `IslandLevel` INT NOT NULL , `IslandExp` INT NOT NULL ,`IslandMobDropLevel` INT NOT NULL , `IslandErzDropLevel` INT NOT NULL , `IslandFarmingDropLevel` INT NOT NULL , `IslandXpDropLevel` INT NOT NULL , `IslandBans` LONGTEXT NULL DEFAULT NULL , PRIMARY KEY (`IslandID`)) ENGINE = InnoDB;");
+        this.mysql.update("CREATE TABLE IF NOT EXISTS `islands` ( `IslandID` INT NOT NULL , `Owner` VARCHAR(100) NOT NULL ,`Creator` VARCHAR(100) NOT NULL , `Created` BIGINT NOT NULL ,`Streams` BIGINT NOT NULL , `Server` VARCHAR(100) NOT NULL , `IslandCenter` VARCHAR(100) NOT NULL , `IslandSpawn` VARCHAR(100) NOT NULL , `TrustedPlayers` LONGTEXT NULL DEFAULT NULL , `IslandLevel` INT NOT NULL , `IslandExp` INT NOT NULL ,`IslandMobDropLevel` INT NOT NULL , `IslandErzDropLevel` INT NOT NULL , `IslandFarmingDropLevel` INT NOT NULL , `IslandXpDropLevel` INT NOT NULL , `ExpBlocks` INT NOT NULL ,`IslandBans` LONGTEXT NULL DEFAULT NULL , PRIMARY KEY (`IslandID`)) ENGINE = InnoDB;");
         this.mysql.update("CREATE TABLE IF NOT EXISTS `islandsMoney` (`Player` VARCHAR(100) NOT NULL , `Money` BIGINT NOT NULL , PRIMARY KEY (`Player`)) ENGINE = InnoDB;");
-        this.mysql.update("CREATE TABLE IF NOT EXISTS `islandsWarps` (`IslandID` INT NOT NULL , `WarpName` VARCHAR(100) NOT NULL , `WarpCords` VARCHAR(100) NOT NULL , PRIMARY KEY (`IslandID`)) ENGINE = InnoDB;");
-        this.mysql.update("CREATE TABLE IF NOT EXISTS `islandSpawner` (`IslandID` INT NOT NULL , `SpawnerName` VARCHAR(100) NOT NULL , `SpawnerCoords` VARCHAR(100) NOT NULL , `SpawnerLevel` INT NOT NULL , PRIMARY KEY (`IslandID`)) ENGINE = InnoDB;");
-        this.mysql.update("CREATE TABLE IF NOT EXISTS `islandsDeletes` (`IslandID` INT NOT NULL , `Owner` VARCHAR(100) NOT NULL , `TrustedPlayers` LONGTEXT NOT NULL , `Timestamp` BIGINT NOT NULL , `Location` LONGTEXT NOT NULL , PRIMARY KEY (`IslandID`)) ENGINE = InnoDB;");
+        this.mysql.update("CREATE TABLE IF NOT EXISTS `islandsWarps` (`WarpID` INT NOT NULL AUTO_INCREMENT,`Owner` VARCHAR(100) NOT NULL , `WarpName` VARCHAR(100) NOT NULL , `WarpCoords` VARCHAR(100) NOT NULL , PRIMARY KEY (`WarpID`)) ENGINE = InnoDB;");
+        this.mysql.update("CREATE TABLE IF NOT EXISTS `islandSpawner` (`SpawnerID` INT NOT NULL AUTO_INCREMENT ,`SpawnerCoords` VARCHAR(100) NOT NULL , `SpawnerLevel` INT NOT NULL , `SpawnerType` INT NOT NULL , PRIMARY KEY (`SpawnerID`)) ENGINE = InnoDB;");
+        this.mysql.update("CREATE TABLE IF NOT EXISTS `islandsDeletes` (`IslandID` INT NOT NULL  , `Owner` VARCHAR(100) NOT NULL , `TrustedPlayers` LONGTEXT NOT NULL , `Timestamp` BIGINT NOT NULL , `Location` LONGTEXT NOT NULL , PRIMARY KEY (`IslandID`)) ENGINE = InnoDB;");
 
         this.schematicManager = new SchematicManager();
         this.islandManager = new IslandManager();
         this.playerManager = new PlayerManager();
+        this.spawnerManager = new SpawnerManager();
+        this.warpManager = new WarpManager();
 
         PluginManager pluginManager = Bukkit.getPluginManager();
         pluginManager.registerEvents(new PlayerJoinListener(), this);
@@ -122,9 +134,13 @@ public class PlunaIsland extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        for (Location blocks : BlockBreakListener.cobblegen) {
+            blocks.getBlock().setType(Material.AIR);
+        }
+        for (Location blocks : BlockBreakListener.nethergen) {
+            blocks.getBlock().setType(Material.AIR);
+        }
         this.mysql.close();
         super.onDisable();
     }
-
-
 }

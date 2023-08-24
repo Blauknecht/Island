@@ -36,9 +36,11 @@ public class BlockPlaceListener implements Listener {
                 Material material = entry.getKey();
                 int points = entry.getValue();
                 if(event.getBlock().getType() == material){
+                    island.addExpBlock(1);
                     PlunaIsland.getInstance().getIslandManager().getIsland(player.getUniqueId()).addExp(points);
+                    island.updateBossbarProgress(player);
                     PlayerScore playerScore = PlayerScore.getScores().get(player);
-                    playerScore.setScore("§7➥ §f"+ island.getLevel().toString()+"§7/§b"+island.getExp().toString()+"ᴇxᴘ", 3);
+                    playerScore.setScore("§7➥ §f" + island.getLevel().toString(), 3);
                 }
             }
         }else{

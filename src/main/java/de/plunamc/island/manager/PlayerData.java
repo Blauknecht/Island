@@ -4,6 +4,7 @@ import de.plunamc.island.PlunaIsland;
 import de.plunamc.island.market.*;
 import de.plunamc.island.utils.Formatter;
 import de.plunamc.island.utils.Itemmanager;
+import de.plunamc.island.warps.Warps;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang.ArrayUtils;
@@ -43,6 +44,8 @@ public class PlayerData {
     private Inventory volkerverlistfive;
     @Getter
     private Inventory zyruszuchter;
+    @Getter
+    private Inventory warpInventory;
     @Setter
     @Getter
     private int money = 0;
@@ -63,6 +66,7 @@ public class PlayerData {
         this.volkerverlistthree = Bukkit.createInventory(null, 9 * 6, PlunaIsland.getInstance().getInventoryTitle() + "\uE051");
         this.volkerverlistfour = Bukkit.createInventory(null, 9 * 6, PlunaIsland.getInstance().getInventoryTitle() + "\uE052");
         this.volkerverlistfive = Bukkit.createInventory(null, 9 * 6, PlunaIsland.getInstance().getInventoryTitle() + "\uE053");
+        this.warpInventory = Bukkit.createInventory(null, 9 * 6, PlunaIsland.getInstance().getInventoryTitle() + "\uE054");
 
 
         this.loadBenniBaumeister();
@@ -75,6 +79,7 @@ public class PlayerData {
         this.loadVolkerVerkauflisthree();
         this.loadVolkerVerkauflisfour();
         this.loadVolkerVerkauflisfive();
+        this.loadWarpInventory();
     }
 
     //00 01 02 03 04 05 06 07 08
@@ -88,12 +93,29 @@ public class PlayerData {
         this.money += money;
         this.saveMoney(false);
     }
+    public void saveMoney(){
+        this.saveMoney(false);
+    }
 
     public void removeMoney(int money) {
         this.money -= money;
         this.saveMoney(false);
     }
 
+    //WarpInventar
+    public void loadWarpInventory() {
+        int[] slots = new int[]{10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34, 38, 39, 40, 41, 42};
+        int i = 0;
+        for (Warps warps : PlunaIsland.getInstance().getWarpManager().getWarps()) {
+            if (i >= slots.length) {
+                break;
+            }
+            this.warpInventory.setItem(slots[i], Itemmanager.createItemWithLore(Material.GRASS_BLOCK, 1, warps.getWarpName(), Arrays.asList("", Formatter.smallCapsFormatter("§7Warpname: §b"+warps.getWarpName()), Formatter.smallCapsFormatter("§7Inselinhaber: §b"+warps.getOwner().getName()))));
+            i++;
+        }
+    }
+
+    //SHOP
     public void loadGretaGartner() {
         int[] slots = new int[]{10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34, 38, 39, 40, 41, 42};
         int i = 0;
@@ -273,5 +295,4 @@ public class PlayerData {
             }
         });
     }
-
 }

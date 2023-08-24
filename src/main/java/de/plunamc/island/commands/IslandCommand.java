@@ -47,6 +47,7 @@ public class IslandCommand implements CommandExecutor, TabCompleter {
                     player.teleport(island.getSpawn());
                     player.sendMessage(PlunaIsland.getInstance().getPrefix() + "Du wurdest zu deiner Insel teleportiert.");
                     player.setWorldBorder(island.getBorder());
+                    island.addPlayerToBossbar(player);
                 } else {
                     player.sendMessage(PlunaIsland.getInstance().getPrefix() + "/is create §8- §7Erstelle dir eine Insel.");
                 }
@@ -78,6 +79,7 @@ public class IslandCommand implements CommandExecutor, TabCompleter {
                     player.setWorldBorder(null);
                     PlunaIsland.getInstance().getIslandManager().deleteIsland(island);
                     player.teleport(PlunaIsland.getInstance().getIslandManager().getSpawn());
+                    island.deleteBossbar(player);
                     player.sendMessage(PlunaIsland.getInstance().getPrefix()+"Du hast deine Insel erfolgreich gelöscht.");
                     return true;
                 }
@@ -101,6 +103,8 @@ public class IslandCommand implements CommandExecutor, TabCompleter {
                         return false;
                     }
                     island.leave(player.getUniqueId());
+                    island.deleteBossbar(player);
+                    player.teleport(PlunaIsland.getInstance().getIslandManager().getSpawn());
                     return true;
                 }
                 if (args[0].equalsIgnoreCase("info")) {
@@ -109,7 +113,7 @@ public class IslandCommand implements CommandExecutor, TabCompleter {
                         player.sendMessage(PlunaIsland.getInstance().getPrefix() + "Du hast keine Insel.");
                         return false;
                     }
-                    player.sendMessage("§8§m-------------- §bInsel Informationen §8§m--------------");
+                    player.sendMessage("§8§m--------------§b Insel Informationen §8§m--------------");
                     player.sendMessage(PlunaIsland.getInstance().getPrefix() + "Insel-Inhaber: §b" + locationIsland.getOwner().getName());
                     player.sendMessage(PlunaIsland.getInstance().getPrefix() + "Insel wurde erstellt von: §b" + locationIsland.getCreator().getName());
                     player.sendMessage(PlunaIsland.getInstance().getPrefix() + "Insel-Level: §b" + locationIsland.getLevel());
@@ -307,6 +311,7 @@ public class IslandCommand implements CommandExecutor, TabCompleter {
                     }
                     invitedIsland.addPlayer(player.getUniqueId());
                     player.teleport(invitedIsland.getSpawn());
+                    invitedIsland.addPlayerToBossbar(player);
                     return true;
                 }
                 if (args[0].equalsIgnoreCase("deny")) {
@@ -332,6 +337,9 @@ public class IslandCommand implements CommandExecutor, TabCompleter {
                         return false;
                     }
                     island.removePlayer(target.getUniqueId());
+                    if(target.getPlayer() != null){
+                        target.getPlayer().teleport(PlunaIsland.getInstance().getIslandManager().getSpawn());
+                    }
                     return true;
                 }
                 if (args[0].equalsIgnoreCase("help") && args[1].equalsIgnoreCase("2")) {
