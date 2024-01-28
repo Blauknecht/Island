@@ -1,6 +1,6 @@
 name: PlunaMC-Island
 version: 1.0
-author: Kevloe
+author: Kevloe, Simon
 api-version: 1.19
 main: de.plunamc.island.PlunaIsland
 depend:
